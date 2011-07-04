@@ -1,0 +1,11 @@
+mkdir -p /sanity/test
+mkdir -p /sanity/test/archive/{afr,dht,stripe}
+mkdir -p /sanity/test/build/{afr,dht,stripe}
+mkdir -p /sanity/test/counter
+mkdir -p /sanity/test/incoming
+mkdir -p /sanity/test/install/{afr,dht,stripe}
+mkdir -p /sanity/test/queue
+mkdir -p /sanity/test/results/{afr,dht,stripe}
+mkdir -p /sanity/test/spec
+mkdir -p /sanity/test/tarball
+mkdir -p /sanity/test/trash

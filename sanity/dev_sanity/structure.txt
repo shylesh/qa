@@ -1,0 +1,187 @@
+/sanity/:
+total 4
+drwxrwxrwx. 12 root root 4096 2011-06-24 04:06 test
+
+/sanity/test:
+total 84
+drwxrwxrwx. 5 root root  4096 2011-02-24 01:59 archive
+drwxrwxrwx. 5 root root  4096 2010-07-27 15:00 build
+drwxrwxrwx. 2 root root  4096 2010-08-04 10:50 counter
+drwxrwxrwx. 2 root root  4096 2011-06-24 04:00 incoming
+drwxrwxrwx. 5 root root  4096 2011-03-22 01:51 install
+drwxrwxrwx. 2 root root  4096 2011-06-24 04:00 queue
+drwxrwxrwx. 5 root root  4096 2011-06-24 04:06 results
+-rwxr-xr-x. 1 root root 38885 2011-06-24 04:06 sanity.log
+drwxrwxrwx. 4 root root  4096 2011-06-24 03:33 spec
+drwxrwxrwx. 2 root root  4096 2010-07-27 15:00 tarball
+drwxrwxrwx. 2 root root  4096 2011-06-24 04:06 trash
+
+/sanity/test/archive:
+total 12
+drwxrwxrwx. 2 root root 4096 2011-02-24 01:59 afr
+drwxrwxrwx. 2 root root 4096 2011-02-24 01:59 dht
+drwxrwxrwx. 2 root root 4096 2011-02-24 01:59 stripe
+
+/sanity/test/archive/afr:
+total 0
+
+/sanity/test/archive/dht:
+total 0
+
+/sanity/test/archive/stripe:
+total 0
+
+/sanity/test/build:
+total 12
+drwxrwxrwx. 2 root root 4096 2011-06-24 03:03 afr
+drwxrwxrwx. 2 root root 4096 2011-06-24 04:06 dht
+drwxrwxrwx. 2 root root 4096 2011-06-24 03:38 stripe
+
+/sanity/test/build/afr:
+total 0
+
+/sanity/test/build/dht:
+total 0
+
+/sanity/test/build/stripe:
+total 0
+
+/sanity/test/counter:
+total 4
+-rw-r--r--. 1 root root   0 2010-08-04 10:50 10093
+-rwxr-xr-x. 1 root root 283 2010-07-27 15:00 counter.sh
+
+/sanity/test/incoming:
+total 0
+
+/sanity/test/install:
+total 12
+drwxrwxrwx. 2 root root 4096 2011-06-24 03:03 afr
+drwxrwxrwx. 2 root root 4096 2011-06-24 04:06 dht
+drwxrwxrwx. 2 root root 4096 2011-06-24 03:38 stripe
+
+/sanity/test/install/afr:
+total 0
+
+/sanity/test/install/dht:
+total 0
+
+/sanity/test/install/stripe:
+total 0
+
+/sanity/test/queue:
+total 0
+
+/sanity/test/results:
+total 12
+drwxrwxrwx. 3 root root 4096 2011-06-24 02:46 afr
+drwxrwxrwx. 3 root root 4096 2011-06-24 03:29 dht
+drwxrwxrwx. 3 root root 4096 2011-06-24 03:29 stripe
+
+/sanity/test/results/afr:
+total 4
+drwxr-xr-x. 4 root root 4096 2011-06-24 03:03 afr_lakshmipathi_space
+
+/sanity/test/results/afr/afr_lakshmipathi_space:
+total 188
+drwxr-xr-x. 2 root root   4096 2011-06-24 02:46 06_24_11_02:46:13
+drwxr-xr-x. 2 root root   4096 2011-06-24 03:03 06_24_11_03:03:01
+-rw-r--r--. 1 root root 184093 2011-06-24 03:03 afr_lakshmipathi_space.tgz
+
+/sanity/test/results/afr/afr_lakshmipathi_space/06_24_11_02:46:13:
+total 3740
+-rw-r--r--. 1 root root 2716743 2011-06-24 02:46 afr_client.log
+-rw-r--r--. 1 root root    1346 2011-06-24 02:46 afrQA.log
+-rw-r--r--. 1 root root 1103897 2011-06-24 02:46 afr_server.log
+
+/sanity/test/results/afr/afr_lakshmipathi_space/06_24_11_03:03:01:
+total 3772
+-rw-r--r--. 1 root root 2746697 2011-06-24 03:03 afr_client.log
+-rw-r--r--. 1 root root    1346 2011-06-24 03:03 afrQA.log
+-rw-r--r--. 1 root root 1104540 2011-06-24 03:03 afr_server.log
+
+/sanity/test/results/dht:
+total 4
+drwxr-xr-x. 5 root root 4096 2011-06-24 04:06 dht_lakshmipathi_space
+
+/sanity/test/results/dht/dht_lakshmipathi_space:
+total 52
+drwxr-xr-x. 2 root root  4096 2011-06-24 03:29 06_24_11_03:29:26
+drwxr-xr-x. 2 root root  4096 2011-06-24 03:44 06_24_11_03:44:37
+drwxr-xr-x. 2 root root  4096 2011-06-24 04:06 06_24_11_04:06:05
+-rw-r--r--. 1 root root 38434 2011-06-24 04:06 dht_lakshmipathi_space.tgz
+
+/sanity/test/results/dht/dht_lakshmipathi_space/06_24_11_03:29:26:
+total 88
+-rw-r--r--. 1 root root 70240 2011-06-24 03:29 dht_client.log
+-rw-r--r--. 1 root root  1344 2011-06-24 03:29 dhtQA.log
+-rw-r--r--. 1 root root  6049 2011-06-24 03:29 dht_server.log
+
+/sanity/test/results/dht/dht_lakshmipathi_space/06_24_11_03:44:37:
+total 764
+-rw-r--r--. 1 root root 610514 2011-06-24 03:44 dht_client.log
+-rw-r--r--. 1 root root   1345 2011-06-24 03:44 dhtQA.log
+-rw-r--r--. 1 root root 161896 2011-06-24 03:44 dht_server.log
+
+/sanity/test/results/dht/dht_lakshmipathi_space/06_24_11_04:06:05:
+total 800
+-rw-r--r--. 1 root root 622681 2011-06-24 04:06 dht_client.log
+-rw-r--r--. 1 root root   1345 2011-06-24 04:06 dhtQA.log
+-rw-r--r--. 1 root root 186369 2011-06-24 04:06 dht_server.log
+
+/sanity/test/results/stripe:
+total 4
+drwxr-xr-x. 4 root root 4096 2011-06-24 03:38 stripe_lakshmipathi_space
+
+/sanity/test/results/stripe/stripe_lakshmipathi_space:
+total 184
+drwxr-xr-x. 2 root root   4096 2011-06-24 03:29 06_24_11_03:29:40
+drwxr-xr-x. 2 root root   4096 2011-06-24 03:38 06_24_11_03:38:50
+-rw-r--r--. 1 root root 176595 2011-06-24 03:38 stripe_lakshmipathi_space.tgz
+
+/sanity/test/results/stripe/stripe_lakshmipathi_space/06_24_11_03:29:40:
+total 80
+-rw-r--r--. 1 root root 62341 2011-06-24 03:29 stripe_client.log
+-rw-r--r--. 1 root root  1746 2011-06-24 03:29 stripeQA.log
+-rw-r--r--. 1 root root 10245 2011-06-24 03:29 stripe_server.log
+
+/sanity/test/results/stripe/stripe_lakshmipathi_space/06_24_11_03:38:50:
+total 5676
+-rw-r--r--. 1 root root 2131344 2011-06-24 03:38 stripe_client.log
+-rw-r--r--. 1 root root    1349 2011-06-24 03:38 stripeQA.log
+-rw-r--r--. 1 root root 3671318 2011-06-24 03:38 stripe_server.log
+
+/sanity/test/spec:
+total 32
+-rwxr-xr-x. 1 root root 1480 2011-02-24 01:51 afr_client.vol
+-rwxr-xr-x. 1 root root 1017 2011-03-22 03:40 afr_server.vol
+-rwxr-xr-x. 1 root root 1471 2011-06-24 03:33 dht_client.vol
+-rwxr-xr-x. 1 root root 1012 2011-03-22 03:40 dht_server.vol
+drwxr-xr-x. 2 root root 4096 2010-07-29 09:04 old-vols
+-rwxr-xr-x. 1 root root 2076 2011-06-24 03:33 stripe_client.vol
+-rwxr-xr-x. 1 root root 1748 2011-03-22 03:41 stripe_server.vol
+drwxr-xr-x. 2 root root 4096 2010-08-02 06:51 vol-ip
+
+/sanity/test/spec/old-vols:
+total 24
+-rwxr-xr-x. 1 root root 496 2010-07-29 09:04 afr_client.vol
+-rwxr-xr-x. 1 root root 527 2010-07-29 09:04 afr_server.vol
+-rwxr-xr-x. 1 root root 476 2010-07-29 09:04 dht_client.vol
+-rwxr-xr-x. 1 root root 527 2010-07-29 09:04 dht_server.vol
+-rwxr-xr-x. 1 root root 465 2010-07-29 09:04 stripe_client.vol
+-rwxr-xr-x. 1 root root 530 2010-07-29 09:04 stripe_server.vol
+
+/sanity/test/spec/vol-ip:
+total 24
+-rwxr-xr-x. 1 root root 1482 2010-08-02 06:51 afr_client.vol
+-rwxr-xr-x. 1 root root 1011 2010-08-02 06:51 afr_server.vol
+-rwxr-xr-x. 1 root root 1473 2010-08-02 06:51 dht_client.vol
+-rwxr-xr-x. 1 root root 1006 2010-08-02 06:51 dht_server.vol
+-rwxr-xr-x. 1 root root 2080 2010-08-02 06:51 stripe_client.vol
+-rwxr-xr-x. 1 root root 1736 2010-08-02 06:51 stripe_server.vol
+
+/sanity/test/tarball:
+total 0
+
+/sanity/test/trash:
+total 0
