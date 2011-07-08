@@ -1,0 +1,10 @@
+type=2
+count=2
+status=1
+sub_count=2
+version=1
+transport-type=0
+volume-id=01234567-89ab-cdef-0123-456789abcdef
+brick-0=host0:-our-brick-location
+brick-1=host1:-our-brick-location
+

@@ -1,0 +1,14 @@
+sanity/nightly_valgrind/ ---> script used for nightly valgrind run.
+sanity/dev_sanity/ ---> script used for dev_sanity test.
+===============================================
+community-scripts/rename/ ---> few scripts which catch rename related issues in dht(note it might expose rename issues in other xlators too).
+
+a)repo.py ---> create 5 directories 'input{1,2,3,4,5}' with each directory has 1500 files and create 'testdir'. Run the program
+b)rename.sh ---> rename script
+c)index.c ---> dovecot program
+
+community-scripts/rename/atomic ---> Bug 1034 - rename() is not atomic
+===============================================
+community-scripts/locks/locky.sh --->Configuration on the command line and (serious) locking problems
+community-scripts/locks/lock.php ---> Bug 1017 - Locking deadlock when upgrading lock
+===============================================

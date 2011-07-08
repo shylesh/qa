@@ -1,0 +1,88 @@
+*** Cluster and Gluster Configuration
+
+The cluster has MAX nodes.  Each node has a gluster brick.
+The bricks are assembled into a single gluster volume, using
+pure replication.  The gluster volume is mounted at the same
+BASE_PATH on each node.
+
+Edit BASE_PATH in gt.h to the appropriate path before
+compiling.
+
+Compile the test programs
+  cc gt_init.c   -o gt_init
+  cc gt_rename.c -o gt_rename
+  cc gt_read.c   -o gt_read
+And distribute them to all nodes of the cluster.
+
+*** Test Configuration
+
+There are three test programs.
+
+One instance of gt_init is run once, on any node in
+the cluster, before the other test processes are started.
+This cleans up and initializes the contents of BASE_PATH,
+then terminates.
+
+An instance of gt_rename runs on every node.  Each instance is
+started with a numeral from 1 to MAX as a command line argument.
+These continuously replace a set of files by renaming a temp
+file on top of existing files.
+
+An instance of gt_read runs on every node.  Each instance is
+started with a numeral from 1 to MAX as a command line argument.
+These continuously read all the files touched by the set of
+gt_rename processes.
+
+I.e., with cluster nodes numbered 1 to MAX, on node n start:
+  gt_rename n &
+  gt_read MAX &
+
+*** File Structure
+
+BASE_PATH/1/WA_RC_0
+           /WA_RC_1
+           /WA_RC_2
+         /...
+         /MAX/WA_RC_0
+             /WA_RC_1
+             /WA_RC_2
+
+There is a directory under BASE_PATH for each node,
+numbered 1 through MAX.
+
+gt_rename processes manipulate files only within
+their node's directory.
+
+gt_read test process reads all files and writes no
+file.
+
+Every file is written by only one test process.
+The contents of every directory (not directory tree)
+is written by only one test process.
+
+Every file is read by MAX test processes other than
+the single writing test process.
+
+*** Test Operation
+
+The gt_init process destroys any existing file structure
+under BASE_PATH, then creates and initializes the contents
+of the file structure.
+
+The gt_rename processes always write a fixed distinctive
+value into each file they write.  They open a temp file, write a
+fixed value, and rename the file onto the standard file.
+The fixed value is different for every standard file.
+
+The gt_rename and gt_read processes always test each file for
+existence, then check the contents for the expected distinctive
+value, for each file they access.  Apparently missing files or
+unexpected contents are logged.
+
+The gt_rename and gt_read processes iterate every CYCLE_TIME
++[0..CYCLE_JITTER) milliseconds until terminated.
+
+By observing the output of the gt_read processes, the
+characteristics of bug1034 can be seen.  On node n, gt_read
+gets ENOENT for open and for read-after-successful-open on
+BASE_PATH/n/*.
