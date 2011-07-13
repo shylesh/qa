@@ -2,5 +2,6 @@
 			------
 Add sanity scripts under directory "sanity"
 Add community provided scripts under "community-scripts"
+Add any custom written c programs for filesysem functionality checking or some benchmarking under directory c_pgms
 
 Read INFO file for script details.
