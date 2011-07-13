@@ -19,3 +19,6 @@ c_pgms/threaded_io ---> program for opening a file from multiple threads and eac
 
 c_pgms/create_bench(create.c) ---> benchmarking application for taking average time duration needed for the creation of different types of files such as regular file, directory, FIFO, character and block device special files
 ============================================================================================================================================
+
+legacy/performance ---> legacy scripts (not currently in use) for getting performance statistics
+============================================================================================================================================
