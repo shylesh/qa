@@ -16,4 +16,6 @@ community-scripts/locks/lock.php ---> Bug 1017 - Locking deadlock when upgrading
 c_pgms/locking  ---> programs (both for file as well as directory) for doing open, lock (fcntl and flock), write, close on an fd multiple times to check for a leak in some memory type of the glusterfs process. (bug number 3025)
 
 c_pgms/threaded_io ---> program for opening a file from multiple threads and each thread doing some operation such as stat, write & truncate, read, chown etc on multiple fds
+
+c_pgms/create_bench(create.c) ---> benchmarking application for taking average time duration needed for the creation of different types of files such as regular file, directory, FIFO, character and block device special files
 ============================================================================================================================================
