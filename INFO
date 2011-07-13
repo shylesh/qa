@@ -1,5 +1,6 @@
 sanity/nightly_valgrind/ ---> script used for nightly valgrind run.
 sanity/dev_sanity/ ---> script used for dev_sanity test.
+sanity/system_light/ ---> script which checks for the sanity of the filesystem by conducting tests and running tools
 ===============================================
 community-scripts/rename/ ---> few scripts which catch rename related issues in dht(note it might expose rename issues in other xlators too).
 

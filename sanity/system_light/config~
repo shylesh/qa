@@ -1,0 +1,139 @@
+
+#Test path i.e. the path where the configuration file resides.Execution must be done from the saopt location where it resides
+export CONF_FILE=/opt/qa/tools/system_light/config
+
+#Directory from which the script is invoked
+export INVOKEDIR=$PWD
+
+export ERR=0
+
+#The log file where the error optassages and the tiopt duration should be logged
+export TMP="/mnt/logs"
+export LOG_FILE="$TMP/time$$.log"
+export TEST_DIR=$PWD
+export DECISION="n"
+export TYPE="other"
+
+while getopts 'w:l:D:t' option
+do
+	case $option in
+	w)
+		TEST_DIR="$OPTARG"
+		;;
+	l)
+		LOG_FILE="$OPTARG"
+		;;
+	D)
+		DECISION="$OPTARG"
+		;;
+	t)
+		TYPE="$OPTARG"
+		;;
+	esac
+done
+
+# Do you want thetest to be terminated on first falure? Press y if you want to
+if [ "$DECISION" = "y" ]; then
+    set -e;
+fi
+
+#File where failed tests are saved"
+export LOG_DIR=$(dirname $LOG_FILE)
+#mkdir $LOG_DIR/tests_failed
+export TEST_FAIL=$LOG_DIR/tests_failed
+
+#GlusterFS mount point
+export GF_MP=$TEST_DIR
+export THIS_TEST_DIR=$TEST_DIR/run$$/
+mkdir $THIS_TEST_DIR
+
+#The path which contains the binaries of arequal,postmark,dbench,fileop etc if they are not installed in the system
+export PATH=$PATH:/opt/qa/tools
+export BIN_PATH=/opt/qa/tools
+
+#Arequal related variables
+export ARE_SRC_DIR=/opt/qa/tools/ #The Directory in which the file or the directory being tested is present
+export FILEORDIR=system_light #THe file or the directory to be tested
+export ARE_SRC=$ARE_SRC_DIR$FILEORDIR 
+export ARE_DST=$THIS_TEST_DIR$FILEORDIR #The destination directory where the test file should be copied
+
+#Bonnie Related variables
+export USER_NAME=`whoami`
+export WD=$THIS_TEST_DIR
+
+#dbench related variables
+export TIME=300
+export DBENCH_CLNTS=10
+
+#dd related variables
+export OF=dd_test
+export BS_SIZE=100M
+export DD_CNT=10
+
+#Read from the large file
+export LARGE_FILE_SOURCE=$THIS_TEST_DIR/$OF
+export LARGE_FILE_DEST=/dev/null
+
+#fileop related variables
+#export FILEOP_SIZE=100
+export FILEOP_CNT=30
+
+#fsx related variables
+export FSX_FILE_ORIG=/opt/qa/tools/read
+export FSX_FILE=$(basename $FSX_FILE_ORIG)
+export NUM_OPS=100 #Number of operations to be perforoptd default is infinity
+
+#ffsb related variables
+export FFSB_FILE=$THIS_TEST_DIR/profile_everything
+
+#glusterfs build
+export GFS_VERSION=3.0.0pre2
+export GLUSTERFS_TAR_FILE=/opt/qa/tools/glusterfs-$GFS_VERSION.tar.gz
+export GLUSTERFS_DIR=glusterfs.git
+
+#ioblazer related variables
+export BLAZER_DIR=$THIS_TEST_DIR;
+
+#iozone related variables
+export FILE_SIZE=4g
+export RECORD_SIZE=22k
+
+# kernel related variables
+#export SCRIPTS_PATH="/opt/qa/tools/system_light/scripts"
+export VERSION=2.6.31.1
+export KERNEL_PATH=/opt/qa/tools/linux-$VERSION.tar.bz2
+
+#ltp related variables
+export LTP_DIR=/opt/qa/tools/ltp-full-20091031/testcases/kernel/fs/
+
+#locks related variables
+export LOCK_BIN=/opt/qa/tools/locks/locktests
+export CON_PROC=22
+export LOCK_TEST_FILE=$THIS_TEST_DIR/locks_test
+
+#lmbench related variables
+export LM_DIR=lmbench-3.0-a9
+export SRC_DIR=$BIN_PATH/lmbench-3.0-a9
+
+#openssl related variables
+export OPENSSL_TAR_FILE="/opt/qa/tools/openssl-0.9.8c.tar.gz"
+export OPENSSL_DIR="openssl-0.9.8c"
+export PREFIX=''
+export OPENSSLDIR=''
+
+#posix compliance related variables
+export DIR="/opt/qa/tools/posix-testsuite";
+
+#postmark related variables
+export POST_FILE=/opt/qa/tools/system_light/pm.config
+
+#Multiple file related variables
+export NUM_OF_FILES=100000
+
+#syscallbench related variables
+export TOOL_DIR=/opt/qa/tools/tools.git
+export SYSCALL_BIN=$TOOL_DIR/syscallbench/syscallbench
+export SYSCALL_PLOT=$TOOL_DIR/syscallbench/syscallben-plot 
+
+#tiobench related variables
+export TIO_BIN=/opt/qa/tools/tiobench-0.3.3/tiotest
