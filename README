@@ -3,5 +3,7 @@
 Add sanity scripts under directory "sanity"
 Add community provided scripts under "community-scripts"
 Add any custom written c programs for filesysem functionality checking or some benchmarking under directory c_pgms
+Add any legacy (unused currently) code under the directory legacy
+Add any custom python programs under the directoy python_pgms
 
 Read INFO file for script details.

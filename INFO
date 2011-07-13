@@ -22,3 +22,5 @@ c_pgms/create_bench(create.c) ---> benchmarking application for taking average t
 
 legacy/performance ---> legacy scripts (not currently in use) for getting performance statistics
 ============================================================================================================================================
+python_pgms/cloud-on-fly ---> cloud seed programs which is used for testing glusterfs of versions < 3.1.x
+============================================================================================================================================
