@@ -21,6 +21,8 @@ c_pgms/threaded_io ---> program for opening a file from multiple threads and eac
 c_pgms/create_bench(create.c) ---> benchmarking application for taking average time duration needed for the creation of different types of files such as regular file, directory, FIFO, character and block device special files
 
 c_pgms/inotify.c ---> program which monitors a directory and sends mail whenever some files are created under it. Used for sending nightly sanity results.
+
+c_pgms/trucate ---> programs which truncates a file based on both path as well as fd on a file. Can be enhanced in future to write some truncate based applications. Used to verify bug 3077.
 ============================================================================================================================================
 
 legacy/performance ---> legacy scripts (not currently in use) for getting performance statistics
