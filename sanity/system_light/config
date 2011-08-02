@@ -116,8 +116,8 @@ export LM_DIR=lmbench-3.0-a9
 export SRC_DIR=$BIN_PATH/lmbench-3.0-a9
 
 #openssl related variables
-export OPENSSL_TAR_FILE="/opt/qa/tools/openssl-0.9.8c.tar.gz"
-export OPENSSL_DIR="openssl-0.9.8c"
+export OPENSSL_TAR_FILE="/opt/qa/tools/openssl-1.0.0d.tar.gz"
+export OPENSSL_DIR="openssl-1.0.0d"
 export PREFIX=''
 export OPENSSLDIR=''
 
