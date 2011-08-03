@@ -1,0 +1,10 @@
+sanity/nightly_valgrind/ ---> script used for nightly valgrind run.
+===============================================
+sanity/dev_sanity/ ---> script used for dev_sanity test.
+===============================================
+sanity/system_light/ ---> script which checks for the sanity of the filesystem by conducting tests and running tools
+===============================================
+sanity/top_profile ----> scripts for top/profile sanity
+===============================================
+sanity/pump_replace_brick ----> scripts for testing pump xlator funtionality and replace brick operations
+===============================================
