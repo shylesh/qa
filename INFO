@@ -15,6 +15,8 @@ community-scripts/rename/atomic ---> Bug 1034 - rename() is not atomic
 community-scripts/locks/locky.sh --->Configuration on the command line and (serious) locking problems
 community-scripts/locks/lock.php ---> Bug 1017 - Locking deadlock when upgrading lock
 ===============================================
+community-scripts/parallel_read --> Bug 3011 (ticket #3815) Parallel read
+===============================================
 
 c_pgms/locking  ---> programs (both for file as well as directory) for doing open, lock (fcntl and flock), write, close on an fd multiple times to check for a leak in some memory type of the glusterfs process. (bug number 3025)
 
