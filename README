@@ -6,4 +6,6 @@ Add any custom written c programs for filesysem functionality checking or some b
 Add any legacy (unused currently) code under the directory legacy
 Add any custom python programs under the directoy python_pgms
 
+Add rpm/deb package related scripts under packing directory.
+
 Read INFO under sub-dirs for script details.
