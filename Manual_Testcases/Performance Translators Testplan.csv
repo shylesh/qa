@@ -1,0 +1,49 @@
+Translator,Testcase,Description,Desired Output
+Io-threads,thread-count
+Io-threads,idle-time
+read-ahead,Create a file and do multiple reads on it
+read-ahead,Large regular file test
+read-ahead,Small link file test
+read-ahead,Large link file test
+
+
+
+
+quick-read,Small files read
+quick-read,Small file write
+quick-read,Reads larger than quick-read cache-size
+quick-read,Data consistency check
+quick-read,Read files from multiple clients
+quick-read,chmod operation
+quick-read,stat operation
+quick-read,other path based operations
+quick-read, max-file-size option
+
+io-threads,Ordered operations
+
+io-cache,Read and re-reading files
+io-cache,Multi-threaded sequential reads
+io-cache,Multi-threaded random reads
+
+read-ahead,"With 128K page-size, read first page , then into second and read the entire chunk"
+read-ahead,Data consistency check
+read-ahead,Check with very small page-sizes
+read-ahead,Cache consistence in the absence of writes
+read-ahead,Atime update on option
+read-ahead,Random reads test
+read-ahead,Re-read test
+read-ahead,Multiple sequential reads
+read-ahead,Multiple random reads
+read-ahead,Read-reads on the same offset
+
+write-behind,Write-read-stat on single fd
+write-behind,Multiple reads and writes on a single fd
+write-behind,Writes with cache-size 0
+write-behind,Cache coherency tests
+write-behind,Random writes test
+write-behind,Multiple small writes
+write-behind,write-closefd-openfd-read
+write-behind,Enable Tricking on/off
+write-behind,Varies cache size test
+
+stat-prefetch,Stat operations
