@@ -8,3 +8,4 @@ sanity/top_profile ----> scripts for top/profile sanity
 ===============================================
 sanity/pump_replace_brick ----> scripts for testing pump xlator funtionality and replace brick operations
 ===============================================
+sanity/nightly_sanity ----> nightly sanity scripts
