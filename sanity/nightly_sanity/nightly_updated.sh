@@ -687,6 +687,9 @@ function take_statedump ()
 {
     local dir;
 
+    echo 3 > /proc/sys/vm/drop_caches;
+    sleep 2;
+
     dir=$1;
     for i in $(ls /etc/glusterd/vols/vol/run)
     do
