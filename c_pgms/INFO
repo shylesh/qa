@@ -12,4 +12,8 @@ c_pgms/inotify.c ---> program which monitors a directory and sends mail whenever
 ===============================================
 c_pgms/trucate ---> programs which truncates a file based on both path as well as fd on a file. Can be enhanced in future to write some truncate based applications. Used to verify bug 3077.
 
+===============================================
 c_pgms/new-ps-perf(new-fs-perf.c) -----> fs-perf test program modified. Now the number of files to be opened can be given as an argument. Default value is 30000
+
+===============================================
+c_pgms/ping_pong.c (ping_pong.c) -------> ping_pong program modified. Now the time duration for which ping_pong should execute can be given as an argument. By default it executed for 600 seconds.
