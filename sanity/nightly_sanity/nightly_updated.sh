@@ -221,7 +221,7 @@ function volume_create ()
     vol_type=$1;
     if [ $vol_type == "dht" ]; then
         echo "Creating the distribute volume";
-        gluster volume create vol $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
+        gluster --mode=script volume create vol $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
         if [ $? -ne 0 ]; then
             echo "gluster volume create failed. Check glusterd log file";
             return 11;
@@ -232,7 +232,7 @@ function volume_create ()
 
     if [ $vol_type == "afr" ]; then
         echo "Creating the replicate volume"
-        gluster volume create vol replica 2 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2;
+        gluster --mode=script volume create vol replica 2 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2;
         if [ $? -ne 0 ]; then
             echo "gluster volume create failed. Check glusterd log file";
             return 11;
@@ -243,7 +243,7 @@ function volume_create ()
 
     if [ $vol_type == "stripe" ]; then
         echo "Creating the stripe volume";
-        gluster volume create vol stripe 4 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
+        gluster --mode=script volume create vol stripe 4 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
         if [ $? -ne 0 ]; then
             echo "gluster volume create failed. Check glusterd log file";
             return 11;
@@ -254,7 +254,7 @@ function volume_create ()
 
     if [ $vol_type == "disrep" ]; then
         echo "Creating a distributed-replicate volume";
-        gluster volume create vol replica 2 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
+        gluster --mode=script volume create vol replica 2 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
         if [ $? -ne 0 ]; then
             echo "gluster volume create failed. Check glusterd log file";
             return 11;
@@ -265,7 +265,7 @@ function volume_create ()
 
     if [ $vol_type == "dis-stripe" ]; then
         echo "Creating a distributed-stripe volume";
-        gluster volume create vol stripe 2 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
+        gluster --mode=script volume create vol stripe 2 $(hostname):$EXPORTDIR/export1 $(hostname):$EXPORTDIR/export2 $(hostname):$EXPORTDIR/export3 $(hostname):$EXPORTDIR/export4;
         if [ $? -ne 0 ]; then
             echo "gluster volume create failed. Check glusterd log file";
             return 11;
