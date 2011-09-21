@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <sys/mman.h>
+#include <limits.h>
 
 static struct timeval tp1,tp2;
 
@@ -145,6 +146,48 @@ static void ping_pong(void *info)
         }
 }
 
+int
+check_options_valid (char *data, int *value)
+{
+        int  ret  = 0;
+	int len = 0;
+	int i   = 0;
+	char *endptr, *str;
+	int old_errno;
+	long  val = -1;
+
+        old_errno = errno;
+        errno = 0;
+        str = data;
+
+        val = strtol (str, &endptr, 10);
+        /* Check for various possible errors */
+        if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+            || (errno != 0)) {
+                fprintf (stderr, "%s", strerror (errno));
+                ret = -1;
+                goto out;
+        }
+
+        if (endptr == str) {
+                fprintf(stderr, "No digits were found\n");
+                ret = -1;
+                goto out;
+        }
+
+        /* Not necessarily an error... */
+        if (*endptr != '\0') {
+                printf("Further characters after number: %s\n", endptr);
+                ret = -1;
+                goto out;
+        }
+
+        *value = val;
+        ret = 0;
+out:
+        return ret;
+}
+
 int main(int argc, char *argv[])
 {
         char *fname;
@@ -154,6 +197,7 @@ int main(int argc, char *argv[])
         pthread_t   thread;
         int         tid = -1;
         int zzzz = 600;
+        int  ret  = 0;
 
         while ((c = getopt(argc, argv, "rwm")) != -1) {
                 switch (c){
@@ -184,12 +228,19 @@ int main(int argc, char *argv[])
         }
 
         fname = argv[0];
-        num_locks = atoi(argv[1]);
-	if (argv[2])
-                zzzz = atoi (argv[2]);
 
-        if (zzzz <= 0) {
-                fprintf (stderr, "Cannot sleep for 0 or -ve seconds. Defaulting to 600");
+        ret = check_options_valid (argv[1], &num_locks);
+        if (ret < 0)
+                goto out;
+
+	if (argv[2]) {
+                ret = check_options_valid (argv[2], &zzzz);
+                if (ret < 0)
+                        goto out;
+        }
+
+        if (zzzz < 0) {
+                fprintf (stderr, "Cannot sleep for -ve seconds. Defaulting to 600");
                 zzzz = 600;
         }
 
@@ -201,6 +252,14 @@ int main(int argc, char *argv[])
 
         tid = pthread_create (&thread, NULL, (void *)ping_pong, (void *)&info_file);
 
+	if (zzzz == 0) {
+	        printf ("running indefinitely\n");
+	        pthread_join (thread, NULL);
+		goto out;
+	}
+
         sleep (zzzz);
-        return 0;
+
+ out:
+        return ret;
 }
