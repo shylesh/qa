@@ -7,6 +7,25 @@ function _init ()
     GIT_FILE="/tmp/git_head_`date +%F`";
     rm /tmp/git_head*;
     export PATH=$PATH:/usr/local/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/qa/tools
+
+    if [ ! -e /root/branch ]; then
+        touch /root/branch;
+    fi
+
+    cd $GIT_DIR;
+    branch=$(cat /root/branch);
+    echo $branch;
+    if [ "$branch" != "master" ]; then
+        checkout_branch;
+        if [ $? -ne 0 ]; then
+            branch="master";
+            git checkout $branch;
+        fi
+    else
+        branch="master";
+        git checkout $branch;
+    fi
+    cd -;
 }
 
 function update_git ()
@@ -59,6 +78,27 @@ function update_git ()
     rm -f /root/patches/*;
 }
 
+function checkout_branch ()
+{
+    local ret=0;
+    git branch | grep $branch;
+    if [ $? -ne 0 ]; then
+        git checkout -b $branch origin/$branch;
+        if [ $? -ne 0 ]; then
+            ret=22;
+        fi
+    fi
+
+    if [ $ret -eq 0 ]; then
+        git checkout $branch;
+        if [ $? -ne 0 ]; then
+            ret=22;
+        fi
+    fi
+
+    return $ret;
+}
+
 function dht_sanity ()
 {
     echo "DHT testing"
@@ -107,7 +147,6 @@ function dist_stripe_sanity ()
 
 function main ()
 {
-
     update_git;
     dht_sanity;
     afr_sanity;
