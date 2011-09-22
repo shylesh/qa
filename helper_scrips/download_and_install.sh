@@ -57,6 +57,9 @@ function check_if_qa_release ()
     glusterfs_version=$1;
 
     echo $glusterfs_version | grep "qa" 2>/dev/null 1>/dev/null;
+    if [ $? -ne 0 ]; then
+	echo $glusterfs_version | grep "beta" 2>/dev/null 1>/dev/null;
+    fi
     ret=$?;
 
     return $ret;
