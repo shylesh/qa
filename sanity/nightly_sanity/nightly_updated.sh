@@ -601,6 +601,12 @@ function send_results()
 	cp -r $LOGDIR/* $RESULTDIR;
         tar cjf results_$translator.bz2 $RESULTDIR;
 
+        ############################### copying the patches applied today ##################################
+
+        cp -r /tmp/patches/ $LOGDIR;
+
+        ####################################################################################################
+
 	# git push log files
 	echo "Pushing logs to qalogs git repo: "
         mkdir -p $LOGREPO/`date +%F`/$translator/

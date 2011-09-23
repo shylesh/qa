@@ -67,14 +67,17 @@ function update_git ()
         #return 0;
     fi
 
+    echo "========PATCHES========";
+
     for i in $(ls /root/patches)
     do
       $GIT_PATH apply /root/patches/$i;
+      echo $i >> $GIT_FILE
     done
 
-    echo "========DIFF========";
-    $GIT_PATH diff >> $GIT_FILE;
+    #$GIT_PATH diff >> $GIT_FILE;
 
+    cp -r /root/patches/ /tmp/;
     rm -f /root/patches/*;
 }
 
