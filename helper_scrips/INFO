@@ -6,10 +6,12 @@ helper_scrips/rpm_qa_download_install.sh -----> downloads the rpms for the speci
 
 =============================================================================================================================================
 
-herper_scripts/clean_glusterd.sh
+helper_scripts/clean_glusterd.sh
 helper_scripts/clean_logs.sh
 helper_scripts/start_glusterd.sh
 helper_scripts/probe.sh
 
 The above scripts are usable with the passwordless ssh connection setup between the glusterfs servers, which helps in cleaning the logs, probing, cleaning glusterd, starting glusterd etc.
 
+=============================================================================================================================================
+helper_scripts/install_parallel_glusterfs.sh --------> executes the download_and_install.sh scripts prallely on multiple machines, such that glusterfs gets installed on multiple machines simultaneously.
