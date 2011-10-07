@@ -15,3 +15,7 @@ The above scripts are usable with the passwordless ssh connection setup between 
 
 =============================================================================================================================================
 helper_scripts/install_parallel_glusterfs.sh --------> executes the download_and_install.sh scripts prallely on multiple machines, such that glusterfs gets installed on multiple machines simultaneously.
+
+=============================================================================================================================================
+helper_scrips/glusterfs_uninstall.sh ------> uninstalls the specified glusterfs version if it finds the source directory.
+herper_scripts/multi_uninstall.sh -------> uninstalls the specified glusterfs from multiple machines, by executing glusterfs_uninstall.sh script.
