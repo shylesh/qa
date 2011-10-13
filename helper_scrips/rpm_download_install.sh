@@ -31,24 +31,24 @@ function _init ()
         echo $version | grep "3.2" 2>/dev/null 1>/dev/null;
         if [ $? -eq 0 ]; then
             version_number=$(echo $version | cut -f 2 -d "-");
-            download_address="http://download.gluster.com/pub/gluster/glusterfs/3.2/$version_number/CentOS/";
+            download_address="http://download.gluster.com/pub/gluster/glusterfs/3.2/$version_number/RHEL/";
         else
             grep "3.1" $version 2>/dev/null 1>/dev/null;
             echo "haha yes"
             if [ $? -eq 0 ]; then
                 version_number=$(echo $version | cut -f 2 -d "-");
-                download_address="http://download.gluster.com/pub/gluster/glusterfs/3.1/$version_number/CentOS/";
+                download_address="http://download.gluster.com/pub/gluster/glusterfs/3.1/$version_number/RHEL/";
             else
                 grep "3.0" $version 2>/dev/null 1>/dev/null;
                 if [ $? -eq 0 ]; then
                     version_number=$(cut -f 2 -d "-" $version);
-                    download_address="http://download.gluster.com/pub/gluster/glusterfs/3.0/$version_number/CentOS/";
+                    download_address="http://download.gluster.com/pub/gluster/glusterfs/3.0/$version_number/RHEL/";
                 fi
             fi
         fi
     fi
 
-    echo "KK: $download_address"
+    echo "Download address: $download_address" && sleep 2;
 # 	ls -l "$version".tar.gz 2>/dev/null 1>/dev/null
 # 	if [ $? -ne 0 ]; then
 }
@@ -68,7 +68,12 @@ function download_rpms ()
     address=$1;
     local ret;
 
-    mkdir $PWD/rpms/$version_number;
+    if [ ! -d $PWD/rpms ] || [ ! -d $PWD/rpms/$version_number ]; then
+	mkdir $PWD/rpms/$version_number -p;
+    else
+	echo "the directory for the mentioned versrion $version_number is present";
+	return;
+    fi
 
     cd $PWD/rpms/$version_number;
 
@@ -82,7 +87,7 @@ function download_rpms ()
     check_if_qa_release $version;
     ret=$?
 
-    if [$ret -eq 0 ]; then
+    if [ $ret -eq 0 ]; then
 	wget $address/$version_number/x86_64/glusterfs-core-$version_number-1.x86_64.rpm;
 	wget $address/$version_number/x86_64/glusterfs-debuginfo-$version_number-1.x86_64.rpm;
 	wget $address/$version_number/x86_64/glusterfs-fuse-$version_number-1.x86_64.rpm;
@@ -91,11 +96,11 @@ function download_rpms ()
 	    echo "3.2 version";
 	fi
     else
-	wget $address/glusterfs-core-$version_number-1.x86_64.rpm;
-	 wget $address/glusterfs-debuginfo-$version_number-1.x86_64.rpm;
-        wget $address/glusterfs-fuse-$version_number-1.x86_64.rpm;
+	wget $address/glusterfs-core-$version_number-1.el6.x86_64.rpm;
+	 wget $address/glusterfs-debuginfo-$version_number-1.el6.x86_64.rpm;
+        wget $address/glusterfs-fuse-$version_number-1.el6.x86_64.rpm;
         if [ $is_32 -eq 0 ]; then
-            wget $address/glusterfs-geo-replication-$version_number-1.x86_64.rpm;
+            wget $address/glusterfs-geo-replication-$version_number-1.el6.x86_64.rpm;
 	    echo "3.2 version";
         fi
     fi
@@ -104,7 +109,11 @@ function download_rpms ()
 
 function install_or_upgrade ()
 {
-    cd /root/rpms/$version_number;
+    local old_PWD;
+
+    old_PWD=$PWD;
+
+    cd $PWD/rpms/$version_number;
     if [ $upgrade != "yes" ]; then
 	for i in $(ls)
 	do
@@ -118,7 +127,7 @@ function install_or_upgrade ()
     fi
 
     ret=$?;
-    cd /root;
+    cd $old_PWD;
 
     ldconfig;
     return $ret;

@@ -19,3 +19,5 @@ helper_scripts/install_parallel_glusterfs.sh --------> executes the download_and
 =============================================================================================================================================
 helper_scrips/glusterfs_uninstall.sh ------> uninstalls the specified glusterfs version if it finds the source directory.
 herper_scripts/multi_uninstall.sh -------> uninstalls the specified glusterfs from multiple machines, by executing glusterfs_uninstall.sh script.
+
+helper_scrips/install_glusterfs_rpm.sh -----> installs the specified glusterfs rpms on the machines whose list is provided in /root/machines,parallely
