@@ -1,0 +1,28 @@
+export MNT_PT_NEG_PID="/mntpt1"
+export MNT_PT="/mntpt"
+export VERSION="3.2.1qa2"
+export XTIME_PATH="/root/xattr/bin/xtime.rb"
+#file will be truncated to below value
+export TRUNCATE_SIZE=10
+#
+export TOTAL_SERVERS=4
+#
+##server/bricks
+export BACKEND_SERVER1="10.170.189.232"
+export BACKEND_SERVER2="10.170.229.103"
+export BACKEND_SERVER3="10.170.143.189"
+export BACKEND_SERVER4="10.170.205.102"
+#
+export BACKEND_DIR="/mnt/export1"
+export VOLNAME="gsyncgit"
+#
+function show_backend(){
+for i in {1..4};
+do
+server="BACKEND_SERVER$i"
+machine=`printenv $server`
+#echo "--->$machine"
+ssh laks@$machine "ls -l $BACKEND_DIR"
+ssh laks@machine "/root/xattr/bin/xtime.rb $BACKEND_DIR"
+done
+}
