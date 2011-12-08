@@ -17,3 +17,5 @@ c_pgms/new-ps-perf(new-fs-perf.c) -----> fs-perf test program modified. Now the 
 
 ===============================================
 c_pgms/ping_pong.c (ping_pong.c) -------> ping_pong program modified. Now the time duration for which ping_pong should execute can be given as an argument. By default it executed for 600 seconds.
+
+c_pgms/truncate_write.c (trucate_write.c) -----> it truncates a file to the size specified (default is 5GB, and creates and truncates if the file does not exist), writes some data to some offset.

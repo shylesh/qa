@@ -702,7 +702,7 @@ function take_statedump ()
       BRICK_PID=$(cat /etc/glusterd/vols/vol/run/$i);
       kill -USR1 $BRICK_PID;
       sleep 1;
-      mv /tmp/glusterdump.$BRICK_PID $dir;
+      mv /tmp/*.$BRICK_PID.dump $dir;
     done
 
     for j in $(seq 1 $num_clients)
@@ -710,10 +710,10 @@ function take_statedump ()
       CLIENT_PID=$(cat /tmp/client_pid$j);
       kill -USR1 $CLIENT_PID;
       sleep 1;
-      mv /tmp/glusterdump.$CLIENT_PID $dir;
+      mv /tmp/*.$CLIENT_PID.dump $dir;
     done
 }
-      
+
 function main()
 {
         echo "In main";
@@ -724,7 +724,7 @@ function main()
 	start_glusterd;
         start_glusterfs;
 	take_statedump $LOGDIR/old_dump/;
-        run_tests; 
+        run_tests;
 	take_statedump $LOGDIR/new_dump/;
         trap - INT TERM EXIT
         post_run;
