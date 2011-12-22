@@ -5,7 +5,7 @@ function _init ()
     set -u;
 }
 
-function peer_probe ()
+function peer_detach ()
 {
     local remote_server=;
 
@@ -14,13 +14,13 @@ function peer_probe ()
     fi
 
     if [ $remote_server ]; then
-	gluster peer probe $remote_server;
+	gluster peer detach $remote_server;
 	return 0;
     fi
 
     for i in $(cat /root/servers)
     do
-      peer_probe $i;
+      peer_detach $i;
     done
 
 }
@@ -33,7 +33,7 @@ function main ()
 	exit 1
     fi
 
-    peer_probe;
+    peer_detach;
 
     return 0;
 }
