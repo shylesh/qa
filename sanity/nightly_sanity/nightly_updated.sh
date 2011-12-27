@@ -41,21 +41,21 @@ function _init()
     sleep 1;
     DEFAULT_LOGDIR="/usr/local/var/log/glusterfs";
 #     if [ $mount_type == "fuse" ]; then
-# 	WORKSPACE_DIR="/opt/users/nightly_sanity/glusterfs.git";
-#     else 
-# 	if [ $mount_type == "nfs" ]; then
-# 	WORKSPACE_DIR="/opt/users/nfs_sanity/glusterfs.git";
-# 	else
-# 	    echo "Unknown mount type $mount_type";
-# 	    exit 22;
-# 	fi
+#       WORKSPACE_DIR="/opt/users/nightly_sanity/glusterfs.git";
+#     else
+#       if [ $mount_type == "nfs" ]; then
+#       WORKSPACE_DIR="/opt/users/nfs_sanity/glusterfs.git";
+#       else
+#           echo "Unknown mount type $mount_type";
+#           exit 22;
+#       fi
 #     fi
     WORKSPACE_DIR="/root/sanity/glusterfs.git";
 
     WORKDIR="/export/nightly";
     SPECDIR="/opt/users/nightly_sanity/$translator";
     BUILDDIR="$WORKSPACE_DIR/build";
-    
+
     LOGDIR="$WORKDIR/logs_$translator/`date +%F`";
     EXPORTDIR=$WORKDIR/data;
     MOUNTDIR=$WORKDIR/mount;
@@ -67,7 +67,7 @@ function _init()
 
     if [ "$arch" == "Linux" ]; then
         echo "$COREDIR/core" > /proc/sys/kernel/core_pattern;
-	echo "1" > /proc/sys/kernel/core_uses_pid;
+        echo "1" > /proc/sys/kernel/core_uses_pid;
     fi
 
     #EMAIL="dl-qa@gluster.com"
@@ -83,7 +83,7 @@ function _init()
 # SPECDIR="/opt/users/vijay/nightly"
 # BUILDDIR="$WORKSPACE_DIR/build"
 
-# LOGDIR="$WORKDIR/logs/`date +%F`" 
+# LOGDIR="$WORKDIR/logs/`date +%F`"
 # EXPORTDIR=$WORKDIR/data
 # MOUNTDIR=$WORKDIR/mount
 # RESULTDIR=/tmp/nightly-results
@@ -95,7 +95,7 @@ function _init()
 # function update_git ()
 # {
 #         cd $WORKSPACE_DIR
-# 	echo "$WORKSPACE_DIR in there"
+#       echo "$WORKSPACE_DIR in there"
 #         git pull
 # }
 
@@ -111,10 +111,10 @@ function prepare_dirs()
         #         mkdir -p $MOUNTDIR
         # fi
 
-    
-	# j=0;
+
+        # j=0;
         # #Create individual export_dirs
-	# cd $SPECDIR
+        # cd $SPECDIR
         # for i in `ls server*.vol`
         # do
         #         let "j += 1"
@@ -152,27 +152,27 @@ function prepare_dirs()
             mkdir -p $MOUNTDIR/nfs_client$j;
         done
     else
-	echo "Unknown mount type; Please specify one of fuse , nfs or both";
+        echo "Unknown mount type; Please specify one of fuse , nfs or both";
     fi
     fi
     fi
 
     if [ ! -d $LOGDIR ]; then
         mkdir -p $LOGDIR;
-	mkdir -p $LOGDIR/old_dump/;
-	mkdir -p $LOGDIR/new_dump/;
+        mkdir -p $LOGDIR/old_dump/;
+        mkdir -p $LOGDIR/new_dump/;
     fi
-    
+
     if [ ! -d $SYSCALLDIR ]; then
-	mkdir -p $SYSCALLDIR;
+        mkdir -p $SYSCALLDIR;
     fi
-    
+
     if [ ! -d $COREDIR ]; then
-	mkdir -p $COREDIR;
+        mkdir -p $COREDIR;
     fi
 
     if [ ! -d $CORE_REPOSITORY ]; then
-	mkdir -p $CORE_REPOSITORY;
+        mkdir -p $CORE_REPOSITORY;
     fi
 }
 
@@ -185,13 +185,13 @@ function install_glusterfs()
         mkdir $BUILDDIR;
     fi
     cd $BUILDDIR;
-    
+
     if [ "$arch" == "Linux" ]; then
-	make clean -j 32;
-        export CFLAGS="-g -O0 -DDEBUG";
-        ../configure CFLAGS="-g -O0 -DDEBUG" --enable-fusermount;
+        make clean -j 32;
+        export CFLAGS="-g3 -DDEBUG -lgcov --coverage";
+        ../configure CFLAGS="-g3 -DDEBUG -lgcov --coverage" --enable-fusermount;
         make -j 32>/dev/null;
-	echo "Post make";
+        echo "Post make";
         make install -j 32>/dev/null;
     else if [ "$arch" == "SunOs" ]; then
         make clean;
@@ -250,7 +250,7 @@ function volume_create ()
         else
             return 0;
         fi
-    fi    
+    fi
 
     if [ $vol_type == "disrep" ]; then
         echo "Creating a distributed-replicate volume";
@@ -283,16 +283,16 @@ function start_volume()
         echo "gluster volume start failed. Check glusterd log file"
         return 11;
     else
-	# echo "Setting brick log-level to debug";
-	# gluster volume set vol diagnostics.brick-log-level debug;
-	# if [ $? -ne 0 ]; then
-	#     echo "Setting brick log level to debug failed. Going with normal log";
-	# fi
-	# echo "Setting client log-level to debug";
-	# gluster volume set vol diagnostics.client-log-level debug;
-	# if [ $? -ne  0 ]; then
-	#     echo "Setting client log level to debug failed. Going with normal log";
-	# fi
+        # echo "Setting brick log-level to debug";
+        # gluster volume set vol diagnostics.brick-log-level debug;
+        # if [ $? -ne 0 ]; then
+        #     echo "Setting brick log level to debug failed. Going with normal log";
+        # fi
+        # echo "Setting client log-level to debug";
+        # gluster volume set vol diagnostics.client-log-level debug;
+        # if [ $? -ne  0 ]; then
+        #     echo "Setting client log level to debug failed. Going with normal log";
+        # fi
         return 0;
     fi
 }
@@ -301,20 +301,20 @@ function mount_volume ()
 {
     echo "Started the volume. Mounting it"
     if [ $mount_type == "fuse" ]; then
-	modprobe fuse;
-	if [ $? -ne  0 ]; then
-	    echo "cannot load fuse. Exiting";
-	    return 11;
-	fi
+        modprobe fuse;
+        if [ $? -ne  0 ]; then
+            echo "cannot load fuse. Exiting";
+            return 11;
+        fi
 
-	for i in $(seq 1 $num_clients)
-	do
+        for i in $(seq 1 $num_clients)
+        do
             #mount -t glusterfs $(hostname):vol $MOUNTDIR/client$i
         glusterfs --volfile-server=$(hostname) --volfile-id=vol $MOUNTDIR/client$i -p /tmp/client_pid$i;
-	df -h; #to be removed
-	done
+        df -h; #to be removed
+        done
     fi
-     
+
     if [ $mount_type == "nfs" ]; then
         sleep 2;
         gluster volume info vol;
@@ -327,7 +327,7 @@ function mount_volume ()
         fi
         for i in $(seq 1 $num_clients)
         do
-	    sleep 1;
+            sleep 1;
             mount -t nfs -o nolock $(hostname):vol $MOUNTDIR/nfs_client$i
         done
     fi
@@ -335,12 +335,12 @@ function mount_volume ()
     if [ $mount_type == "both" ]; then
         for i in $(seq 1 $num_clients)
         do
-	    
-	    modprobe fuse;
-	    if [ $? -ne 0 ]; then
-		echo "cannot load fuse. Exiting";
-		return 11;
-	    fi
+
+            modprobe fuse;
+            if [ $? -ne 0 ]; then
+                echo "cannot load fuse. Exiting";
+                return 11;
+            fi
 
             #mount -t glusterfs $(hostname):vol $MOUNTDIR/client$i
             glusterfs --volfile-server=$(hostname) --volfile-id=vol $MOUNTDIR/client$i -p /tmp/client_pid$i;
@@ -353,7 +353,7 @@ function mount_volume ()
 #         echo "Unknown mount type"
 #         stop_glusterfs;
 #         return 11;
-    fi   
+    fi
 }
 
 function start_glusterfs ()
@@ -386,36 +386,36 @@ function run_tests ()
 {
         if [ $mount_type == "fuse" ]; then
             cd $MOUNTDIR/client1;
-	fi
-
-	if [ $mount_type == "nfs" ]; then
-	    cd $MOUNTDIR/nfs_client1;
-	fi
-
-	set +e;
-        if [ "$arch" == "SunOs" ] || [ "$mount_type" == "nfs" ]; then
-	    /opt/qa/tools/system_light/run.sh -w $MOUNTDIR/nfs_client1 -t nfs -l /export/runlog.$translator
         fi
 
-	if [ $mount_type == "fuse" ]; then
-	    echo "executing tests on a fuse mount point"
-	    /opt/qa/tools/system_light/run.sh -w $MOUNTDIR/client1 -l /export/runlog.$translator
-	fi
+        if [ $mount_type == "nfs" ]; then
+            cd $MOUNTDIR/nfs_client1;
+        fi
 
-	# if [ $mount_type == "nfs" ]; then
-# 	    echo "executing tests on an nfs mount point"
-# 	    /opt/qa/tools/system_light/run.sh -w $MOUNTDIR/nfs_client1 -t nfs -l /export/runlog.$translator;
-# 	fi
+        set +e;
+        if [ "$arch" == "SunOs" ] || [ "$mount_type" == "nfs" ]; then
+            /opt/qa/tools/system_light/run.sh -w $MOUNTDIR/nfs_client1 -t nfs -l /export/runlog.$translator
+        fi
+
+        if [ $mount_type == "fuse" ]; then
+            echo "executing tests on a fuse mount point"
+            /opt/qa/tools/system_light/run.sh -w $MOUNTDIR/client1 -l /export/runlog.$translator
+        fi
+
+        # if [ $mount_type == "nfs" ]; then
+#           echo "executing tests on an nfs mount point"
+#           /opt/qa/tools/system_light/run.sh -w $MOUNTDIR/nfs_client1 -t nfs -l /export/runlog.$translator;
+#       fi
 
         x=$?;
-        if [ !x ] 
+        if [ !x ]
         then
                 echo "Sanity Passed!";
         else
                 echo "Sanity Failed. Please check your changes!";
         fi
 
-	echo "Contents of mount point after all the tests" >> /export/runlog.$translator;
+        echo "Contents of mount point after all the tests" >> /export/runlog.$translator;
         if [ "$arch" == "SunOs" ] || [ "$mount_type" == "nfs" ]; then
             ls -laR $MOUNTDIR/nfs_client1 >> /export/runlog.$translator;
             echo "removing the mount point contents" >> /export/runlog.$translator;
@@ -427,8 +427,8 @@ function run_tests ()
             echo "removing the mount point contents" >> /export/runlog.$translator;
             rm -rfv $MOUNTDIR/export/client1/*;
         fi
-	set -e;
-	
+        set -e;
+
 }
 
 function stop_glusterfs()
@@ -438,12 +438,12 @@ function stop_glusterfs()
 
     pgrep locktests;
     if [ $? -eq 0 ]; then
-	pkill locktests;
-	if [ $? -ne 0 ]; then
-	    killall -KILL locktests;
-	fi
+        pkill locktests;
+        if [ $? -ne 0 ]; then
+            killall -KILL locktests;
+        fi
     fi
-    
+
     j=0;
     for i in $(seq 1 $num_clients)
     do
@@ -451,33 +451,33 @@ function stop_glusterfs()
         if [ $mount_type == "fuse" ]; then
             umount $MOUNTDIR/client$j;
             if [ $? -ne 0 ]; then
-		echo "unmounting $MOUNTDIR/client$j failed.";
-	    fi
+                echo "unmounting $MOUNTDIR/client$j failed.";
+            fi
             umount $MOUNTDIR/client$j -l;
         else if [ $mount_type == "nfs" ]; then
             set +e;
             umount $MOUNTDIR/nfs_client$j;
             if [ $? -ne 0 ]; then
-		echo "unmounting $MOUNTDIR/nfs_client$j failed";
-	    fi
+                echo "unmounting $MOUNTDIR/nfs_client$j failed";
+            fi
             umount $MOUNTDIR/nfs_client$j -l;
             set -e;
         else if [ $mount_type == "both" ]; then
             set +e;
             umount $MOUNTDIR/client$j;
-	    if [ $? -ne 0 ]; then
-		echo "unmounting $MOUNTDIR/client$j failed";
-	    fi
+            if [ $? -ne 0 ]; then
+                echo "unmounting $MOUNTDIR/client$j failed";
+            fi
             umount MOUNTDIR/client$j -l;
             umount $MOUNTDIR/nfs_client$j;
             if [ $? -ne 0 ]; then
-		echo "unmounting $MOUNTDIR/nfs_client$j failed";
-	    fi
+                echo "unmounting $MOUNTDIR/nfs_client$j failed";
+            fi
             umount $MOUNTDIR/nfs_client -l;
             set -e;
-	fi
-	fi
-	fi
+        fi
+        fi
+        fi
     done
 
     gluster --mode=script volume stop vol;
@@ -487,9 +487,9 @@ function stop_glusterfs()
     fi
 
     gluster --mode=script volume delete vol;
-    if [ $? -ne  0 ]; then 
-	echo "Error while deleting the server processes. Going ahead with umount";
-	return 11;
+    if [ $? -ne  0 ]; then
+        echo "Error while deleting the server processes. Going ahead with umount";
+        return 11;
     fi
 
     set +e;
@@ -519,47 +519,91 @@ function pre_run()
    #     update_git;
     #set -e;
     echo "Entered pre_run";
-        prepare_dirs;
-        set -e;
-        install_glusterfs;
+    prepare_dirs;
+    set -e;
+    install_glusterfs;
+    prepare_gcov $WORKSPACE_DIR;
+
+}
+
+function prepare_gcov ()
+{
+    local dir;
+
+    dir=$1;
+    set +e;
+
+    coverage_dir=$dir/build;
+
+    if [ ! -d $coverage_dir/coverage ]; then
+        mkdir $coverage_dir/coverage;
+    fi
+
+    # Reset all execution count details.
+    lcov -d $dir --zerocounters;
+
+    # Run lcov initially with zero code coverage and put it in a ".info" file.
+    lcov -i -c -d $dir -o $coverage_dir/coverage/glusterfs-lcov.info;
+
+    # Now the sanity tests can be run after which we again look back to gcov.
+    set -e;
+}
+
+function post_run_gcov ()
+{
+    local dir;
+
+    dir=$1;
+
+    coverage_dir=$dir/build;
+    # Capture the actual code coverage.
+    lcov -c -d $dir -o $coverage_dir/coverage/glusterfs-lcov.info;
+
+    # Remove the line with "<gluster-repo>/libglusterfs/src/<stdout>"
+    # from ".info" file. For some reason genhtml fails otherwise.
+
+    sed -i.bak '/stdout/d' $coverage_dir/coverage/glusterfs-lcov.info;
+
+    # Generate the html page for code coverage details using genhtml.
+    genhtml -o $coverage_dir/coverage/ $coverage_dir/coverage/glusterfs-lcov.info;
 }
 
 function send_results()
 {
-	if [ ! -d $LOGDIR ]
-	then
-		mkdir $LOGDIR;
-	fi
+        if [ ! -d $LOGDIR ]
+        then
+                mkdir $LOGDIR;
+        fi
         cd $LOGDIR;
 
-	if [ ! -d $RESULTDIR ]
-	then
-		mkdir $RESULTDIR;
-	else
-		rm -rf $RESULTDIR/*;
-	fi
+        if [ ! -d $RESULTDIR ]
+        then
+                mkdir $RESULTDIR;
+        else
+                rm -rf $RESULTDIR/*;
+        fi
 
-	cp -r $DEFAULT_LOGDIR $LOGDIR;
+        cp -r $DEFAULT_LOGDIR $LOGDIR;
 
-	#cp -r $LOGDIR/* $RESULTDIR;
+        #cp -r $LOGDIR/* $RESULTDIR;
         cp /export/runlog.$translator $RESULTDIR;
-	mv /export/tests_failed $LOGDIR/tests_failed_$translator;
-	echo $translator >> $LOGDIR/tests_failed_$translator;
-	echo $mount_type >> $LOGDIR/tests_failed_$translator;
-	cat /tmp/posix | grep FAILED >> $LOGDIR/tests_failed_$translator;
-	cat /tmp/git_head* >> $LOGDIR/tests_failed_$translator;
-	#cat /tmp/bonnie >> $LOGDIR/tests_failed_$translator;
-	#cat /tmp/iozone >> $LOGDIR/tests_failed_$translator;
-	cat /export/$(date +%F) >>$LOGDIR/tests_failed_$translator;
-	mv /export/$(date +%F) $LOGDIR;
+        mv /export/tests_failed $LOGDIR/tests_failed_$translator;
+        echo $translator >> $LOGDIR/tests_failed_$translator;
+        echo $mount_type >> $LOGDIR/tests_failed_$translator;
+        cat /tmp/posix | grep FAILED >> $LOGDIR/tests_failed_$translator;
+        cat /tmp/git_head* >> $LOGDIR/tests_failed_$translator;
+        #cat /tmp/bonnie >> $LOGDIR/tests_failed_$translator;
+        #cat /tmp/iozone >> $LOGDIR/tests_failed_$translator;
+        cat /export/$(date +%F) >>$LOGDIR/tests_failed_$translator;
+        mv /export/$(date +%F) $LOGDIR;
 
-	DATE=$(date +%F);
+        DATE=$(date +%F);
         found_gluster_core=0;
-	ls $COREDIR/core* ;
-	if [ $? -eq 0 ]; then
+        ls $COREDIR/core* ;
+        if [ $? -eq 0 ]; then
             if [ ! -d $CORE_REPOSITORY/$DATE ]; then
-		mkdir $CORE_REPOSITORY/$DATE;
-	    fi
+                mkdir $CORE_REPOSITORY/$DATE;
+            fi
 
             for i in $(ls $COREDIR)
             do
@@ -576,8 +620,8 @@ function send_results()
             else
                 rm -rf $COREDIR/core*;
             fi
-	    #mv $COREDIR/core* $CORE_REPOSITORY/core*_$translator_`date +%F`
-	fi
+            #mv $COREDIR/core* $CORE_REPOSITORY/core*_$translator_`date +%F`
+        fi
 
         echo "Critical and error logs for client, nfs and glusterd" >> $LOGDIR/logs_failed_$translator;
         for i in $(find $DEFAULT_LOGDIR -type f -iname "*.log")
@@ -596,9 +640,11 @@ function send_results()
         done
 
         rm -rf $DEFAULT_LOGDIR/*.log;
-	rm -rf $DEFAULT_LOGDIR/bricks/*;
+        rm -rf $DEFAULT_LOGDIR/bricks/*;
 
-	cp -r $LOGDIR/* $RESULTDIR;
+        cp -r $LOGDIR/* $RESULTDIR;
+        cp -r $BUILDDIR/coverage/ $RESULTDIR;
+
         tar cjf results_$translator.bz2 $RESULTDIR;
 
         ############################### copying the patches applied today ##################################
@@ -607,40 +653,51 @@ function send_results()
 
         ####################################################################################################
 
-	# git push log files
-	echo "Pushing logs to qalogs git repo: "
+        # git push log files
+        echo "Pushing logs to qalogs git repo: "
         mkdir -p $LOGREPO/`date +%F`/$translator/
         cp $LOGDIR/results_$translator.bz2 $LOGREPO/`date +%F`/$translator/;
         cd /export/qalogs && git pull && git add . && git commit -a -m "log for `date +%F`" && git push;
-	if [ $? -ne 0 ]; then
-	    echo "Commit failed. Recommit bz2 log manually." > /tmp/git_log_commit;
-	else
-	    echo "Commit successful." > /tmp/git_log_commit;
-	fi
-	cd $LOGDIR;
+        if [ $? -ne 0 ]; then
+            echo "Commit failed. Recommit bz2 log manually." > /tmp/git_log_commit;
+        else
+            echo "Commit successful." > /tmp/git_log_commit;
+        fi
+        cd $LOGDIR;
 
 #	echo "Sending results";
 #	sleep 2;
 #        mutt -a results_$translator.bz2 -s "Sanity Results for `date +%F`" -i $LOGDIR/tests_failed_$translator $EMAIL <.;
 
-	###############IMP##############################
-	#This part is needed if the iozone and bonnie results are to be uploaded in the dev server
+        ###############IMP##############################
+        #This part is needed if the iozone and bonnie results are to be uploaded in the dev server
 #         cp /tmp/bonnie /tmp/bonnie_$translator_`date +%F`;
 #         cp /tmp/iozone /tmp/iozone_$translator_`date +%F`;
 #         scp /tmp/bonnie_`date +%F` raghavendrabhat@dev.gluster.com:/home/raghavendrabhat/public_html/test;
 #         scp /tmp/iozone_`date +%F` raghavendrabhat@dev.gluster.com:/home/raghavendrabhat/public_html/test;
-	##############IMP################################
+        ##############IMP################################
 
 #        rm /export/bonnie /export/iozone;
-	rm /tmp/posix;
+        rm /tmp/posix;
 
-	scp $LOGDIR/logs_failed_$translator $EMAIL/result/;
-	scp $LOGDIR/tests_failed_$translator $EMAIL/nightly_sanity/;
-	if [ $? -ne 0 ]; then
-	    echo "sending mail failed" > /tmp/mail_result;
-	else
-	    echo "sending mail successful" >/tmp/mail_result;
-	fi
+        mkdir /tmp/gcov_logs;
+        cp -r $BUILDDIR/coverage/ /tmp/gcov_logs;
+        cp $LOGDIR/logs_failed_$translator /tmp/gcov_logs;
+
+        cd /tmp/;
+        tar cjf logs_failed_$translator.bz2 gcov_logs;
+        cd -;
+
+        scp /tmp/logs_failed_$translator.bz2 $EMAIL/result/;
+        scp $LOGDIR/tests_failed_$translator $EMAIL/nightly_sanity/;
+        if [ $? -ne 0 ]; then
+            echo "sending mail failed" > /tmp/mail_result;
+        else
+            echo "sending mail successful" >/tmp/mail_result;
+        fi
+
+        # remove the logs and the index file containing directory.
+        rm -rf /tmp/gcov_logs /tmp/logs_failed_$translator.bz2;
 }
 
 function clean_results()
@@ -654,27 +711,27 @@ function clean_results()
 function syscallbench_plot()
 {
     cp /tmp/`date +%F` $SYSCALLDIR
-    cd $SYSCALLDIR 
+    cd $SYSCALLDIR
     mv today yesterday
     ln -s `date +%F` today
     $TOOLDIR/syscallbench-plot today yesterday > $LOGDIR/plot.ps
 }
-    
+
 function  check_and_kill ()
 {
     pgrep glusterfs;
     if [ $? -eq 0 ]; then
-	pkill glusterfs;
+        pkill glusterfs;
     fi
 
     pgrep glusterfsd;
     if [ $? -eq 0 ]; then
-	pkill glusterfsd;
+        pkill glusterfsd;
     fi
 
     pgrep glusterd;
-    if [ $? -eq 0 ]; then 
-	pkill glusterd;
+    if [ $? -eq 0 ]; then
+        pkill glusterd;
     fi
 }
 
@@ -682,11 +739,12 @@ function post_run()
 {
         set +e;
         stop_glusterfs;
-	check_and_kill;
-	send_results;
+        check_and_kill;
+        post_run_gcov $WORKSPACE_DIR;
+        send_results;
         cleanup;
-	syscallbench_plot;
-	clean_results;
+        syscallbench_plot;
+        clean_results;
 }
 
 function take_statedump ()
@@ -717,15 +775,15 @@ function take_statedump ()
 function main()
 {
         echo "In main";
-	#translator=$1
+        #translator=$1
         trap "post_run" INT TERM EXIT;
-	pre_run_cleanup;
+        pre_run_cleanup;
         pre_run;
-	start_glusterd;
+        start_glusterd;
         start_glusterfs;
-	take_statedump $LOGDIR/old_dump/;
+        take_statedump $LOGDIR/old_dump/;
         run_tests;
-	take_statedump $LOGDIR/new_dump/;
+        take_statedump $LOGDIR/new_dump/;
         trap - INT TERM EXIT
         post_run;
 }
@@ -739,4 +797,3 @@ function main()
 # fi
 
 _init "$@" && main "$@"
-
