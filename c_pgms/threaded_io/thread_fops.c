@@ -1,6 +1,140 @@
 
 #include "thread_fops.h"
 
+static error_t
+thread_parse_opts (int key, char *arg,
+                   struct argp_state *_state);
+static void
+thread_default_config (void);
+
+static thread_config_t thread_config;
+
+static struct argp_option thread_options[] = {
+        { "dir", 'd', "DIRECTORY", 0, "absolute or relative path of the tests"},
+        { "time", 't', "TIME", 0, "time duration for which test should run"
+          " (defaults to 600 seconds)"},
+        {0, 0, 0, 0, 0}
+};
+
+static error_t
+thread_parse_opts (int key, char *arg,
+            struct argp_state *_state)
+{
+        switch (key) {
+        case 'd':
+        {
+                int len = 0;
+                int pathlen = 0;
+                int ret = -1;
+                int old_errno = 0;
+                struct stat stbuf = {0,};
+
+                len = strlen (arg) + strlen ("playground");
+                if (len > UNIX_PATH_MAX) {
+                        fprintf (stderr, "pathname is too long (%s)\n",
+                                 arg);
+                        return -1;
+                }
+
+                strcpy (thread_config.directory, arg);
+                pathlen = strlen (thread_config.directory);
+                if (thread_config.directory[pathlen - 1] != '/')
+                        thread_config.directory[pathlen] = '/';
+                thread_config.directory[pathlen+1] = '\0';
+
+                old_errno = errno;
+                errno = 0;
+                ret = stat (thread_config.directory, &stbuf);
+                if ((ret == -1) || !S_ISDIR (stbuf.st_mode)) {
+                        if (errno == ENOENT) {
+                                fprintf (stderr, "the directory %s does not "
+                                         "exist\n", thread_config.directory);
+                                return -1;
+                        } else {
+                                fprintf (stderr, "given path %s is not a "
+                                         "directory\n",
+                                         thread_config.directory);
+                                return -1;
+                        }
+                }
+                strcat (thread_config.directory, "playground");
+                errno = old_errno;
+        }
+        break;
+
+        case 't':
+        {
+                long long  time = 0;
+                char       *tail = NULL;
+
+                errno = 0;
+                time = strtoll (arg, &tail, 10);
+                if (errno == ERANGE || errno == EINVAL) {
+                        fprintf (stderr, "invalid time (%s)\n", arg);
+                        return -1;
+                }
+
+                if (tail[0] != '\0') {
+                        fprintf (stderr, "invalid time (%s)\n", arg);
+                        return -1;
+                }
+
+                if (time < 0) {
+                        fprintf (stderr, "time (%s) cannot be -ve\n", arg);
+                        return -1;
+                }
+
+                thread_config.time = time;
+        }
+        break;
+
+        case ARGP_KEY_NO_ARGS:
+                break;
+        case ARGP_KEY_ARG:
+                break;
+        case ARGP_KEY_END:
+                if (_state->argc == 1) {
+                        //argp_usage (_state);
+                        thread_default_config ();
+                }
+
+        }
+
+        return 0;
+}
+
+static struct argp argp = {
+        thread_options,
+        thread_parse_opts,
+        "",
+        "threaded-io - tool which spawns multiple threads, with each thread "
+        "opening the same file and doing different fops on their respective "
+        "fds"
+};
+
+static void
+thread_default_config (void)
+{
+        int ret = -1;
+        char playground[UNIX_PATH_MAX] = {0,};
+        struct stat stbuf = {0,};
+
+        getcwd (playground, sizeof (playground));
+
+        ret = stat (playground, &stbuf);
+        if (ret == -1) {
+                fprintf (stderr, "Error: %s: The playground directory %s "
+                         "seems to have an error (%s)", __FUNCTION__,
+                         playground, strerror (errno));
+                return;
+        }
+
+        strcat (playground, "/playground");
+        strcpy (thread_config.directory, playground);
+
+        thread_config.time = 600;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -25,6 +159,15 @@ main(int argc, char *argv[])
                                              opendir_and_readdir,
         };
 
+        thread_default_config ();
+
+        ret = argp_parse (&argp, argc, argv, 0, 0, NULL);
+        if (ret != 0) {
+                ret = -1;
+                fprintf (stderr, "%s: argp_parse() failed\n", argv[0]);
+                goto err;
+        }
+
         open_t *file = NULL;
         file = (open_t *)calloc(1,sizeof(*file));
         if (!file) {
@@ -38,7 +181,7 @@ main(int argc, char *argv[])
         file->flags = O_CREAT | O_RDWR;
         file->mode = 0755;
 
-        fstat_t *inode;
+        fstat_t *inode = NULL;
         inode = (fstat_t *)calloc(1,sizeof(*inode));
         if (!inode) {
                 fprintf (stderr, "%s:out of memory\n",
@@ -46,6 +189,7 @@ main(int argc, char *argv[])
                 goto out;
         }
 
+        inode->buf = NULL;
         inode->buf = (struct stat *)calloc(1,sizeof(struct stat));
         if (!inode->buf) {
                 fprintf (stderr, "%s:Out of memory\n",
@@ -55,7 +199,7 @@ main(int argc, char *argv[])
 
         int fd_main = -1;
 
-        oft *both;
+        oft *both = NULL;
         both = (oft *)calloc(1,sizeof(*both));
         if (!both) {
                 fprintf (stderr, "%s:out of memory\n",
@@ -63,20 +207,8 @@ main(int argc, char *argv[])
                 goto out;
         }
 
-        if (argc > 1)
-                strncpy (playground, argv[1], strlen (argv[1]));
-        else
-                getcwd (playground, sizeof (playground));
+        strcpy (playground, thread_config.directory);
 
-        ret = stat (playground, &stbuf);
-        if (ret == -1) {
-                fprintf (stderr, "Error: %s: The playground directory %s "
-                         "seems to have an error (%s)", __FUNCTION__,
-                         playground, strerror (errno));
-                goto out;
-        }
-
-        strcat (playground, "/playground");
         ret = mkdir (playground, 0755);
         if (ret == -1 && (errno != EEXIST) ) {
                 fprintf (stderr, "Error: Error creating the playground ",
@@ -85,7 +217,8 @@ main(int argc, char *argv[])
                 goto out;
         }
 
-        printf ("Switching over to the working directory %s\n", playground);
+        printf ("Switching over to the working directory %s time %llu\n",
+                playground, thread_config.time);
         ret = chdir (playground);
         if (ret == -1) {
                 fprintf (stderr, "Error changing directory to the playground %s",
@@ -111,33 +244,45 @@ main(int argc, char *argv[])
                 i++;
         }
 
-        sleep (600);
+        sleep (thread_config.time);
 
         printf ("Total Statistics ======>\n");
-        printf ("Opens        : %d/%d\n", info.num_open_success,info.num_open);
-        printf ("Reads        : %d/%d\n", info.read_success, info.read);
-        printf ("Writes       : %d/%d\n", info.write_success, info.write);
-        printf ("Flocks       : %d/%d\n", info.flocks_success, info.flocks);
-        printf ("fcntl locks  : %d/%d\n", info.fcntl_locks_success,
+        printf ("Opens        : %llu/%llu\n", info.num_open_success,info.num_open);
+        printf ("Reads        : %llu/%llu\n", info.read_success, info.read);
+        printf ("Writes       : %llu/%llu\n", info.write_success, info.write);
+        printf ("Flocks       : %llu/%llu\n", info.flocks_success, info.flocks);
+        printf ("fcntl locks  : %llu/%llu\n", info.fcntl_locks_success,
                 info.fcntl_locks);
-        printf ("Truncates    : %d/%d\n", info.truncate_success, info.truncate);
-        printf ("Fstat        : %d/%d\n", info.fstat_success, info.fstat);
-        printf ("Chown        : %d/%d\n", info.chown_success, info.chown);
-        printf ("Opendir      : %d/%d\n", info.opendir_success, info.opendir);
-        printf ("Readdir      : %d/%d\n", info.readdir_success, info.readdir);
+        printf ("Truncates    : %llu/%llu\n", info.truncate_success, info.truncate);
+        printf ("Fstat        : %llu/%llu\n", info.fstat_success, info.fstat);
+        printf ("Chown        : %llu/%llu\n", info.chown_success, info.chown);
+        printf ("Opendir      : %llu/%llu\n", info.opendir_success, info.opendir);
+        printf ("Readdir      : %llu/%llu\n", info.readdir_success, info.readdir);
 
         ret = 0;
 out:
-        if (both)
-                free(both);
-        if (inode->buf)
-                free (inode->buf);
-        if (inode)
-                free (inode);
-        if (file)
+        if (file) {
                 free (file);
+                file = NULL;
+        }
+        if (inode) {
+                if (inode->buf) {
+                        free (inode->buf);
+                        inode->buf = NULL;
+                }
+                free (inode);
+                inode = NULL;
+        }
+        if (both) {
+                both->open = NULL;
+                both->fstat = NULL;
+                free(both);
+                both = NULL;
+        }
 
         pthread_mutex_destroy (&info.mutex);
+
+err:
         return ret;
 }
 
@@ -260,8 +405,6 @@ open_thread(void *tmp)
                 close (fd);
         }
 out:
-        if (file)
-                free(file);
         return NULL;
 }
 
@@ -315,12 +458,7 @@ fstat_thread(void *ptr)
         }
 
 out:
-
         close (fd);
-        if (inode->buf)
-                free (inode->buf);
-        if (inode)
-                free(inode);
         return NULL;
 }
 

@@ -9,6 +9,8 @@
 #include <string.h>
 #include <pthread.h>
 #include <dirent.h>
+#include <argp.h>
+#include <libgen.h>
 
 void * open_thread (void *);
 void * fstat_thread (void *);
@@ -68,28 +70,38 @@ typedef struct open_fstat oft;
                 }                                                       \
         } while (0);
 
+#ifndef UNIX_PATH_MAX
+#define UNIX_PATH_MAX 4096
+#endif
+
 typedef struct info {
         pthread_mutex_t mutex;
-        unsigned int num_open;
-        unsigned int num_open_success;
-        unsigned int flocks;
-        unsigned int flocks_success;
-        unsigned int fcntl_locks;
-        unsigned int fcntl_locks_success;
-        unsigned int read;
-        unsigned int read_success;
-        unsigned int write;
-        unsigned int write_success;
-        unsigned int fstat;
-        unsigned int fstat_success;
-        unsigned int truncate;
-        unsigned int truncate_success;
-        unsigned int chown;
-        unsigned int chown_success;
-        unsigned int opendir;
-        unsigned int opendir_success;
-        unsigned int readdir;
-        unsigned int readdir_success;
+        unsigned long long num_open;
+        unsigned long long num_open_success;
+        unsigned long long flocks;
+        unsigned long long flocks_success;
+        unsigned long long fcntl_locks;
+        unsigned long long fcntl_locks_success;
+        unsigned long long read;
+        unsigned long long read_success;
+        unsigned long long write;
+        unsigned long long write_success;
+        unsigned long long fstat;
+        unsigned long long fstat_success;
+        unsigned long long truncate;
+        unsigned long long truncate_success;
+        unsigned long long chown;
+        unsigned long long chown_success;
+        unsigned long long opendir;
+        unsigned long long opendir_success;
+        unsigned long long readdir;
+        unsigned long long readdir_success;
 } info_t;
+
+typedef struct
+{
+        char directory[UNIX_PATH_MAX];
+        unsigned long long time;
+} thread_config_t;
 
 info_t info = {0,};
