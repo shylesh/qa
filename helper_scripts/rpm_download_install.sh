@@ -28,24 +28,24 @@ function _init ()
     if [ $op_ret -eq 0 ]; then
 	download_address="http://bits.gluster.com/pub/gluster/glusterfs/";
     else
-        echo $version | grep "3.2" 2>/dev/null 1>/dev/null;
-        if [ $? -eq 0 ]; then
-            version_number=$(echo $version | cut -f 2 -d "-");
-            download_address="http://download.gluster.com/pub/gluster/glusterfs/3.2/$version_number/RHEL/";
-        else
-            grep "3.1" $version 2>/dev/null 1>/dev/null;
-            echo "haha yes"
-            if [ $? -eq 0 ]; then
-                version_number=$(echo $version | cut -f 2 -d "-");
-                download_address="http://download.gluster.com/pub/gluster/glusterfs/3.1/$version_number/RHEL/";
-            else
-                grep "3.0" $version 2>/dev/null 1>/dev/null;
-                if [ $? -eq 0 ]; then
-                    version_number=$(cut -f 2 -d "-" $version);
-                    download_address="http://download.gluster.com/pub/gluster/glusterfs/3.0/$version_number/RHEL/";
-                fi
-            fi
-        fi
+	echo $version | grep "3.2" 2>/dev/null 1>/dev/null;
+	if [ $? -eq 0 ]; then
+	    version_number=$(echo $version | cut -f 2 -d "-");
+	    download_address="http://download.gluster.com/pub/gluster/glusterfs/3.2/$version_number/RHEL/";
+	else
+	    grep "3.1" $version 2>/dev/null 1>/dev/null;
+	    echo "haha yes"
+	    if [ $? -eq 0 ]; then
+		version_number=$(echo $version | cut -f 2 -d "-");
+		download_address="http://download.gluster.com/pub/gluster/glusterfs/3.1/$version_number/RHEL/";
+	    else
+		grep "3.0" $version 2>/dev/null 1>/dev/null;
+		if [ $? -eq 0 ]; then
+		    version_number=$(cut -f 2 -d "-" $version);
+		    download_address="http://download.gluster.com/pub/gluster/glusterfs/3.0/$version_number/RHEL/";
+		fi
+	    fi
+	fi
     fi
 
     echo "Download address: $download_address" && sleep 2;
@@ -80,8 +80,8 @@ function download_rpms ()
     echo $version_number | grep "3.2";
     is_32=$?;
     if [ $is_32 -ne 0 ]; then
-        echo $version_number | grep "3.3";
-        is_32=$?;
+	echo $version_number | grep "3.3";
+	is_32=$?;
     fi
 
     check_if_qa_release $version;
@@ -98,11 +98,11 @@ function download_rpms ()
     else
 	wget $address/glusterfs-core-$version_number-1.el6.x86_64.rpm;
 	 wget $address/glusterfs-debuginfo-$version_number-1.el6.x86_64.rpm;
-        wget $address/glusterfs-fuse-$version_number-1.el6.x86_64.rpm;
-        if [ $is_32 -eq 0 ]; then
-            wget $address/glusterfs-geo-replication-$version_number-1.el6.x86_64.rpm;
+	wget $address/glusterfs-fuse-$version_number-1.el6.x86_64.rpm;
+	if [ $is_32 -eq 0 ]; then
+	    wget $address/glusterfs-geo-replication-$version_number-1.el6.x86_64.rpm;
 	    echo "3.2 version";
-        fi
+	fi
     fi
 }
 
@@ -157,5 +157,3 @@ main ()
 }
 
 _init "$@" && main "$@"
-
-    

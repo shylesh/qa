@@ -22,7 +22,7 @@ function start_and_stop ()
 
 function main ()
 {
-    
+
     start_and_stop;
 
     return 0;

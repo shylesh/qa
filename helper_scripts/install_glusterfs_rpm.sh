@@ -71,5 +71,3 @@ function main ()
 }
 
 _init "$@" && main "$@"
-    
-

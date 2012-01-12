@@ -14,8 +14,8 @@ function clean_logs ()
     fi
 
     if [ $remote_server ]; then
-	ssh $remote_server rm -rf /var/log/glusterfs/*.log;
-	ssh $remote_server rm -rf /var/log/glusterfs/bricks/*;
+	ssh $remote_server rm -rf /usr/local/var/log/glusterfs/*.log;
+	ssh $remote_server rm -rf /usr/local/var/log/glusterfs/bricks/*;
 	return 0;
     fi
 
@@ -28,8 +28,8 @@ function clean_logs ()
 
 function clean_my_logs ()
 {
-    rm -rf /var/log/glusterfs/*.log;
-    rm -rf /var/log/glusterfs/bricks/*;
+    rm -rf /usr/local/var/log/glusterfs/*.log;
+    rm -rf /usr/local/var/log/glusterfs/bricks/*;
 
     return 0;
 }
@@ -50,5 +50,3 @@ function main ()
 }
 
 _init && main "$@"
-    
-

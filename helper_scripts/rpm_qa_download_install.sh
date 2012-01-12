@@ -47,7 +47,7 @@ function check_if_qa_release ()
 function download_rpms ()
 {
     address=$1;
-    
+
     mkdir $PWD/rpms/$version_number;
 
     cd $PWD/rpms/$version_number;
@@ -109,5 +109,3 @@ main ()
 }
 
 _init "$@" && main "$@"
-
-    

@@ -5,7 +5,7 @@ function _init ()
     set -u;
 }
 
-function clean_glusterd ()
+function start_glusterd ()
 {
     local remote_server=;
 
@@ -14,21 +14,21 @@ function clean_glusterd ()
     fi
 
     if [ $remote_server ]; then
-	ssh $remote_server rm -rf /etc/glusterd;
+	ssh $remote_server glusterd;
 	return 0;
     fi
 
     for i in $(cat /root/servers)
     do
-      clean_glusterd $i;
+      start_glusterd $i;
     done
 
 }
 
-function clean_my_glusterd ()
+function start_my_glusterd ()
 {
-    rm -rf /etc/glusterd;
-    return 0;
+    glusterd;
+    return $?;
 }
 
 function main ()
@@ -39,12 +39,10 @@ function main ()
 	exit 1
     fi
 
-    clean_my_glusterd;
-    clean_glusterd;
+    start_glusterd;
+    start_my_glusterd;
 
     return 0;
 }
 
 _init && main "$@"
-
-
