@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
         char *fname;
         int fd, num_locks;
         int c;
-        file_info_t info_file;
+        file_info_t *info_file = NULL;
         pthread_t   thread;
         int         tid = -1;
         int zzzz = 600;
@@ -247,10 +247,16 @@ int main(int argc, char *argv[])
         fd = open(fname, O_CREAT|O_RDWR, 0600);
         if (fd == -1) exit(1);
 
-        info_file.fd = fd;
-        info_file.num_locks = num_locks;
+        info_file = calloc (1, sizeof (*info_file));
+        if (!info_file) {
+                ret = -1;
+                goto out;
+        }
 
-        tid = pthread_create (&thread, NULL, (void *)ping_pong, (void *)&info_file);
+        info_file->fd = fd;
+        info_file->num_locks = num_locks;
+
+        tid = pthread_create (&thread, NULL, (void *)ping_pong, (void *)info_file);
 
 	if (zzzz == 0) {
 	        printf ("running indefinitely\n");
