@@ -30,7 +30,8 @@ _init ()
 15.syscallbench
 16.tiobench
 17.locktests
-18.ioblazer";
+18.ioblazer
+19.fsmark";
 }
 
 run_ffsb ()
@@ -354,6 +355,20 @@ run_rpc_coverage ()
     fi
 }
     
+run_fsmark ()
+{
+    echo "Executing fsmark"
+    set +x
+    $SCRIPTS_PATH/fs_mark.sh
+    if [ "${?}" -eq 0 ]; then
+        CNT=$((CNT+1))
+        echo $CNT
+    else
+        echo "fsmark failed"
+        echo $CNT
+    fi
+}
+
 main ()
 {
     echo " Changing to the specified mountpoint";
@@ -378,6 +393,7 @@ main ()
     run_arequal;
     run_syscallbench;
     run_tiobench;
+    run_fsmark;
     if [ $TYPE != "nfs" ]; then
 	run_locktests;
     fi

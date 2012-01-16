@@ -137,3 +137,7 @@ export SYSCALL_PLOT=$TOOL_DIR/syscallbench/syscallben-plot
 
 #tiobench related variables
 export TIO_BIN=/opt/qa/tools/tiobench-0.3.3/tiotest
+
+#fsmark related variables
+export SUBDIR_COUNT=4
+export THR_COUNT=4
