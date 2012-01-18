@@ -26,7 +26,7 @@ _init ()
 11.ffsb
 12.Reading from large file
 13.Multiple file creation(100000)
-14.glusterfs build 
+14.glusterfs build
 15.syscallbench
 16.tiobench
 17.locktests
@@ -40,13 +40,13 @@ run_ffsb ()
     set +x
     cp $BIN_PATH/system_light/profile_everything $THIS_TEST_DIR/profile_everything
     sed -i "s[/mnt/test1[$THIS_TEST_DIR[" profile_everything
-    $SCRIPTS_PATH/ffsb_test.sh 
+    $SCRIPTS_PATH/ffsb_test.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
         echo "Removing data"
         rm -rfv data && echo "Removed"
-        echo "Removing meta" 
+        echo "Removing meta"
         rm -rfv meta && echo "Removed"
         echo "Removing profile_everything"
         rm $FFSB_FILE && echo "Removed"
@@ -62,7 +62,7 @@ run_ltp ()
     set +x
     mkdir ltp
     cd  ltp
-    $SCRIPTS_PATH/ltp_test.sh 
+    $SCRIPTS_PATH/ltp_test.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -79,7 +79,7 @@ run_fileop ()
 {
     echo "Executing fileop"
     set +x
-    $SCRIPTS_PATH/fileop_test.sh 
+    $SCRIPTS_PATH/fileop_test.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -93,7 +93,7 @@ run_kernel_compile ()
 {
     echo "Kernel compiling"  #Untars the given kernel file and compiles it
     set +x
-    $SCRIPTS_PATH/kernel.sh 
+    $SCRIPTS_PATH/kernel.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -105,22 +105,25 @@ run_kernel_compile ()
     fi
 }
 
-# echo "Executing bonnie++"
-#  set +x
-#  $SCRIPTS_PATH/bonnie_test.sh 
-# if [ "${?}" -eq 0 ]; then
-#     CNT=$((CNT+1))
-#     echo $CNT
-# else
-#     echo "bonnie failed" | tee -a $TEST_FAIL
-#     echo $CNT
-# fi
+run_bonnie ()
+{
+    echo "Executing bonnie++"
+    set +x
+    $SCRIPTS_PATH/bonnie_test.sh
+    if [ "${?}" -eq 0 ]; then
+        CNT=$((CNT+1))
+        echo $CNT
+    else
+        echo "bonnie failed" | tee -a $TEST_FAIL
+        echo $CNT
+    fi
+}
 
 run_dd ()
 {
     echo "Executing dd"
     set +x
-    $SCRIPTS_PATH/dd_test.sh 
+    $SCRIPTS_PATH/dd_test.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -150,7 +153,7 @@ run_dbench ()
 {
     echo "Executing dbench"
     set +x
-    $SCRIPTS_PATH/dbench_test.sh 
+    $SCRIPTS_PATH/dbench_test.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -166,7 +169,7 @@ run_glusterfs_build ()
 {
     echo "glusterfs build"
     set +x;
-    $SCRIPTS_PATH/glusterfs_build.sh 
+    $SCRIPTS_PATH/glusterfs_build.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -180,9 +183,9 @@ run_glusterfs_build ()
 
 run_posix_compliance ()
 {
-    echo "Checking for POSIX compliance" 
+    echo "Checking for POSIX compliance"
     set +x
-    $SCRIPTS_PATH/posix_compliance.sh 
+    $SCRIPTS_PATH/posix_compliance.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -198,7 +201,7 @@ run_openssl_build ()
 {
     echo "Building opnssl"
     set +x
-    $SCRIPTS_PATH/open.sh 
+    $SCRIPTS_PATH/open.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -238,22 +241,25 @@ run_multiple_files ()
     fi
 }
 
-# echo "Executing iozone"
-#  set +x
-#  $SCRIPTS_PATH/iozone_test.sh
-# if [ "${?}" -eq 0 ]; then
-#     CNT=$((CNT+1))
-#     echo $CNT
-# else
-#     echo "iozone failed" | tee -a $TEST_FAIL
-#     echo $CNT
-# fi
+run_iozone ()
+{
+    echo "Executing iozone"
+    set +x
+    $SCRIPTS_PATH/iozone_test.sh
+    if [ "${?}" -eq 0 ]; then
+        CNT=$((CNT+1))
+        echo $CNT
+    else
+        echo "iozone failed" | tee -a $TEST_FAIL
+        echo $CNT
+    fi
+}
 
 run_fsx ()
 {
     echo "Executing fsx"
     set +x
-    $SCRIPTS_PATH/fsx_test.sh 
+    $SCRIPTS_PATH/fsx_test.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -269,7 +275,7 @@ run_arequal ()
 {
     echo "executing arequal"
     set +x
-    $SCRIPTS_PATH/arequal_test.sh 
+    $SCRIPTS_PATH/arequal_test.sh
     if [ "${?}" -eq 0 ]; then
         CNT=$((CNT+1))
         echo $CNT
@@ -347,14 +353,14 @@ run_rpc_coverage ()
     set +x;
     $SCRIPTS_PATH/rpc-fops.sh;
     if [ "${?}" -eq 0 ]; then
-	CNT=$((CNT+1));
-	echo $CNT;
+        CNT=$((CNT+1));
+        echo $CNT;
     else
-	echo "rpc-coverage failed | tee -a $TEST_FAIL";
-	echo $CNT;
+        echo "rpc-coverage failed | tee -a $TEST_FAIL";
+        echo $CNT;
     fi
 }
-    
+
 run_fsmark ()
 {
     echo "Executing fsmark"
@@ -375,7 +381,7 @@ main ()
     cd $THIS_TEST_DIR;
     pwd;
     sleep 1;
-    
+
     run_rpc_coverage;
     run_posix_compliance;
     run_ffsb;
@@ -385,6 +391,8 @@ main ()
     run_dd;
     run_read_large;
     run_dbench;
+    run_bonnie;
+    run_iozone;
     run_glusterfs_build;
     run_openssl_build;
     run_postmark;
@@ -395,7 +403,7 @@ main ()
     run_tiobench;
     run_fsmark;
     if [ $TYPE != "nfs" ]; then
-	run_locktests;
+        run_locktests;
     fi
     #run_blazer;
 
