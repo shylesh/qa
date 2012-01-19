@@ -792,10 +792,17 @@ function post_run()
         clean_results;
 }
 
+# Eventhough statedump is an important information, lets not stop the tests
+# because of some failure in statedump. Instead lets just log a message
+# saying statedump was not taken and continue with the tests.
+
 function take_statedump ()
 {
+    set +e;
     local dir;
+    local ret_value;
 
+    ret_value=0;
     echo 3 > /proc/sys/vm/drop_caches;
     sleep 2;
 
@@ -806,6 +813,14 @@ function take_statedump ()
       kill -USR1 $BRICK_PID;
       sleep 1;
       mv /tmp/*.$BRICK_PID.dump $dir;
+      if [ $? -ne 0 ]; then
+          # probably its on release-3.2 where tests are being run. So search the
+          # statedump files according to older formats only.
+          mv /tmp/glusterdump.$BRICK_PID $dir;
+          if [ $? -ne 0 ]; then
+              ret_value=1;
+          fi
+      fi
     done
 
     for j in $(seq 1 $num_clients)
@@ -814,7 +829,18 @@ function take_statedump ()
       kill -USR1 $CLIENT_PID;
       sleep 1;
       mv /tmp/*.$CLIENT_PID.dump $dir;
+      if [ $? -ne 0 ]; then
+          # probably its on release-3.2 where tests are being run. So search the
+          # statedump files according to older formats only.
+          mv /tmp/glusterdump.$CLIENT_PID $dir;
+          if [ $? -ne 0 ]; then
+              ret_value=1;
+          fi
+      fi
     done
+
+    set -e;
+    return $ret_value;
 }
 
 function main()
@@ -827,8 +853,14 @@ function main()
         start_glusterd;
         start_glusterfs;
         take_statedump $LOGDIR/old_dump/;
+        if [ $? -ne 0 ]; then
+            echo "taking pre run statedump failed." >> /export/tests_failed;
+        fi
         run_tests;
         take_statedump $LOGDIR/new_dump/;
+        if [ $? -ne 0 ]; then
+            echo "taking post run statedump failed." >> /export/tests_failed;
+        fi
         trap - INT TERM EXIT
         post_run;
 }
