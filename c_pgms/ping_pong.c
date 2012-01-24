@@ -191,13 +191,14 @@ out:
 int main(int argc, char *argv[])
 {
         char *fname;
-        int fd, num_locks;
+        int fd, num_locks, num_threads;
         int c;
         file_info_t *info_file = NULL;
-        pthread_t   thread;
-        int         tid = -1;
         int zzzz = 600;
         int  ret  = 0;
+        int   i   = 0;
+
+        num_threads = 1;
 
         while ((c = getopt(argc, argv, "rwm")) != -1) {
                 switch (c){
@@ -220,7 +221,7 @@ int main(int argc, char *argv[])
         argc -= optind;
 
         if (argc < 2) {
-                printf("ping_pong [options] <file> <num_locks> [run_time]\n");
+                printf("ping_pong [options] <file> <num_locks> [num_threads] [run_time]\n");
                 printf("           -r    do reads\n");
                 printf("           -w    do writes\n");
                 printf("           -m    use mmap\n");
@@ -231,18 +232,38 @@ int main(int argc, char *argv[])
 
         ret = check_options_valid (argv[1], &num_locks);
         if (ret < 0)
-                goto out;
+                return ret;
 
 	if (argv[2]) {
-                ret = check_options_valid (argv[2], &zzzz);
+                ret = check_options_valid (argv[2], &num_threads);
                 if (ret < 0)
-                        goto out;
+                        return ret;
+        }
+
+        if (argv[3]) {
+                ret = check_options_valid (argv[3], &zzzz);
+                if (ret < 0)
+                        return ret;
+        }
+
+        if (num_threads <= 0) {
+                fprintf (stderr, "number of threads cannot be -ve. Defaulting to 1\n");
+                num_threads = 1;
+        }
+
+        if (num_threads >= num_locks) {
+                fprintf (stderr, "number of threads (%d) should be lesser than"
+                         " the number of locks (%d)\n", num_threads, num_locks);
+                return -1;
         }
 
         if (zzzz < 0) {
-                fprintf (stderr, "Cannot sleep for -ve seconds. Defaulting to 600");
+                fprintf (stderr, "Cannot sleep for -ve seconds. Defaulting to 600\n");
                 zzzz = 600;
         }
+
+        pthread_t thread[num_threads];
+        int       tid[num_threads];
 
         fd = open(fname, O_CREAT|O_RDWR, 0600);
         if (fd == -1) exit(1);
@@ -256,11 +277,18 @@ int main(int argc, char *argv[])
         info_file->fd = fd;
         info_file->num_locks = num_locks;
 
-        tid = pthread_create (&thread, NULL, (void *)ping_pong, (void *)info_file);
+	printf ("num_locks: %d, num_threads: %d, time: %d\n",
+		num_locks, num_threads, zzzz);
+        sleep (1);
+
+        for (i = 0; i < num_threads ; i++) {
+                tid[i] = pthread_create (&thread[i], NULL, (void *)ping_pong, (void *)info_file);
+        }
 
 	if (zzzz == 0) {
 	        printf ("running indefinitely\n");
-	        pthread_join (thread, NULL);
+		for (i = 0; i < num_threads; i++)
+		     pthread_join (thread[i], NULL);
 		goto out;
 	}
 
