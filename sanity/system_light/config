@@ -13,6 +13,7 @@ export LOG_FILE="$TMP/time$$.log"
 export TEST_DIR=$PWD
 export DECISION="n"
 export TYPE="other"
+export TEST="all"
 
 while getopts 'w:t:l:D' option
 do
@@ -26,9 +27,12 @@ do
 	D)
 		DECISION="$OPTARG"
 		;;
-	t)
+	m)
 		TYPE="$OPTARG"
 		;;
+        t)
+                TEST="$OPTARG"
+                ;;
 	esac
 done
 
