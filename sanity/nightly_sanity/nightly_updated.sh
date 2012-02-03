@@ -17,8 +17,10 @@ function _init()
         mount_type="fuse";
     fi
 #    translator="dht";
+    use_gsync="no";
+    use_quota="no";
 
-    while getopts 't:c:m:' option
+    while getopts 't:c:m:g:q:' option
     do
         case $option in
             t)
@@ -30,6 +32,12 @@ function _init()
             m)
                 mount_type="$OPTARG"
                 ;;
+            g)
+                use_gsync="$OPTARG"
+                ;;
+            q)
+                use_quota="$OPTARG"
+                ;;
             esac
     done
 
@@ -37,7 +45,15 @@ function _init()
         mount_type="nfs";
     fi
 
-    echo "translator: $translator" && echo "mount type: $mount_type";
+    if [ $use_gsync != "yes" ]; then
+        use_gsync="no";
+    fi
+
+    if [ $use_quota != "yes" ]; then
+        use_quota="no";
+    fi
+
+    echo "translator: $translator" && echo "mount type: $mount_type" && echo "gsync: $use_gsync quota: $use_quota";
     sleep 1;
     DEFAULT_LOGDIR="/usr/local/var/log/glusterfs";
 #     if [ $mount_type == "fuse" ]; then
@@ -53,6 +69,7 @@ function _init()
     WORKSPACE_DIR="/root/sanity/glusterfs.git";
 
     WORKDIR="/export/nightly";
+    GSYNC_SLAVE=$WORKDIR/gsync;
     SPECDIR="/opt/users/nightly_sanity/$translator";
     BUILDDIR="$WORKSPACE_DIR/build";
 
@@ -173,6 +190,10 @@ function prepare_dirs()
 
     if [ ! -d $CORE_REPOSITORY ]; then
         mkdir -p $CORE_REPOSITORY;
+    fi
+
+    if [ ! -d $GSYNC_SLAVE ]; then
+        mkdir $GSYNC_SLAVE;
     fi
 }
 
@@ -297,6 +318,28 @@ function start_volume()
     fi
 }
 
+function other_volume_settings ()
+{
+    echo "setting other volume options";
+    if [ $use_gsync == "yes" ]; then
+        gluster volume geo-replication vol $(hostname):$GSYNC_SLAVE start || echo "starting gsync failed";
+    fi
+
+    if [ $use_quota == "yes" ]; then
+        gluster volume quota vol enable;
+        if [ $? -ne 0 ]; then
+            echo "enabling quota failed";
+            return 2;
+        fi
+
+        gluster volume quota vol limit-usage / 20GB;
+        if [ $? -ne 0 ]; then
+            echo "setting quota limit failed";
+            return 2;
+        fi
+    fi
+}
+
 function mount_volume ()
 {
     echo "Started the volume. Mounting it"
@@ -379,6 +422,7 @@ function start_glusterfs ()
     else
         echo "Mounted the volume";
     fi
+    other_volume_settings;
 }
 
 
@@ -505,6 +549,7 @@ function cleanup()
     rm -rfv $EXPORTDIR/*;
     rm -rfv $MOUNTDIR/client*;
     rm -rfv $MOUNTDIR/nfs_client*
+    rm -rfv $GSYNC_SLAVE/*
     rm -rfv /etc/glusterd;
 }
 
