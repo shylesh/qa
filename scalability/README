@@ -1,0 +1,40 @@
+Clustered mode iozone setup:
+----------------------------
+Before continuing reading, please make sure the iozone version is greater
+than 3.394 to run iozone in clustered mode.
+
+Iozone needs either passwordless rsh or passwordless ssh to be setup to run in
+clustered mode.
+By default, iozone uses rsh. To force iozone to use ssh, the shell variable RSH
+needs to be set to 'ssh'. The command line listed earlier uses this feature.
+
+Contents of the iconf file used [ iozone cluster mode configuration file]:
+fusion1 /mnt/fioperf /usr/bin/iozone
+fusion1 /mnt/fioperf /usr/bin/iozone
+fusion2 /mnt/fioperf /usr/bin/iozone
+fusion2 /mnt/fioperf /usr/bin/iozone
+fusion3 /mnt/fioperf /usr/bin/iozone
+fusion3 /mnt/fioperf /usr/bin/iozone
+fusion4 /mnt/fioperf /usr/bin/iozone
+fusion4 /mnt/fioperf /usr/bin/iozone
+fusion5 /mnt/fioperf /usr/bin/iozone
+fusion5 /mnt/fioperf /usr/bin/iozone
+
+[Note that each entry is repeated twice so that two child processes
+could be run on each system.]
+
+Pitfalls:
+
+1.When the config file uses IP addresses instead of hostnames,
+iozone fails to proceed. For a successful iozone run in clustered mode,
+one needs to populate the config file with hostnames.
+For name resolution, one could use /etc/hosts.
+
+2.Even after successfully configuring passwordless rsh/ssh,
+if you are unable to run iozone, make sure you flush firewall rules
+
+To look at the configured firewall rules, one could use:
+# iptables -L
+
+To flush the rules, once could use:
+# iptables -F

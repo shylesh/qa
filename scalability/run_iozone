@@ -1,0 +1,11 @@
+#!/bin/bash
+
+for size in 500m 1g 10g
+do
+    for bs in 16k 32k 64k 128k 256k 512k
+    do
+        echo "Filesize - $size, blksize - $bs"
+        RSH="ssh" iozone -t 4 -i 0 -i 1 -r $bs -s $size  -+m iconf -b iozone.$bs-$size.xls
+        sleep 10
+    done
+done
