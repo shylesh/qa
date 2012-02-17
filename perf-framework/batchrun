@@ -1,0 +1,50 @@
+#!/bin/bash
+
+CONFIG_FILE=gf_perf_config
+source $CONFIG_FILE
+RUNLIST="glusterfs-3git.tar.gz"
+
+function do_run()
+{
+        FIRST=`cat .runfile`
+	./start_perf_measure
+#	sed -i 's/^\.\/create_gluster_vol/#&/' start_perf_measure
+#	sleep 10
+#	if [ $MINOR -gt 1 ]; then
+#	    LAST=$(($FIRST+3))
+#	    ./quota_gsync_run $run
+#	    sed -i 's/^#\.\/create_gluster_vol/\.\/create_gluster_vol/' start_perf_measure
+#	fi
+}
+
+function extract_release()
+{
+    MAJOR=`echo $runlabel | cut -f1 -d'.' | grep -o "^[0-9]"`
+    MINOR=`echo $runlabel | cut -f2 -d'.' | grep -o "^[0-9]"`
+}
+
+for run in $RUNLIST
+do
+	cp tarballs/$run .
+	./setrun $run
+	./deploy_gluster
+	./check_install.new
+        if [ $? -ne 0 ]
+        then
+                echo "Installation of run $run failed. Continuing with next run"
+                continue
+        fi
+	echo "Sleeping for 10 seconds.."
+	runlabel=`echo $run|sed -e 's/^glusterfs-//' -e 's/\.tar\.gz//'`
+	echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - $GF_CONFIG - (quota off, gsync off)" >> $RUNLOG
+	sleep 10
+	extract_release
+	do_run
+	rm $run
+	sed -i 's/ENABLE_ACL=no/ENABLE_ACL=yes/' gf_perf_config
+ 	if [ $MINOR -gt 1 ]; then
+ 	    ./send_mail `seq $FIRST $LAST`
+ 	else
+ 	    ./send_mail $FIRST
+	fi
+done

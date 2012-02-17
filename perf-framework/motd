@@ -1,0 +1,25 @@
+/*
+ * System being used by Rahul for performance runs.
+ * It is part of the setup described below.
+ * Please contact tcp@gluster.com before running anything on this system.
+ *
+ * DO NOT DISTURB THE SETUP SINCE IT MIGHT AFFECT THE PERFORMANCE RUNS.
+ *
+ * /etc/motd last updated:
+ * Mon Jul  4 04:04:29 PDT 2011
+ */
+
++-------------+      +-------------+      +-------------+      +-------------+
+| 10.1.10.30  |<---->| 10.1.10.31  |<---->| 10.1.10.35  |<---->| 10.1.10.36  |
+| (client-10) |      | (client-11) |      | (client-15) |      | (client-16) |
+| (Brick-1)   |      | (Brick-2)   |      | (Brick-3)   |      | (Brick-4)   |
++------+------+      +------+------+      +------+------+      +------+------+
+       |                    |                    |                    |
+       +--------------------+---------+----------+--------------------+
+                                      |
+                                      v
+                               +--------------+
+                               |  10.1.10.29  |
+                               |  (client-9)  |
+                               |  (client)    |
+                               +--------------+

@@ -1,0 +1,42 @@
+#!/bin/bash -u
+
+CONFIG_FILE=gf_perf_config
+source $CONFIG_FILE
+
+run=$1
+runlabel=`echo $run|sed -e 's/^glusterfs-//' -e 's/\.tar\.gz//'`
+
+a=`cat .runfile`
+echo "run$a - Quota off; gsync on..."
+ssh -l root $MGMT_NODE "gluster volume reset $VOLNAME force"
+sleep 5
+ssh -l root $MGMT_NODE "gluster volume set $VOLNAME geo-replication.indexing on"
+sleep 5
+echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - $GF_CONFIG - (quota off, gsync on)" >> $RUNLOG
+./start_perf_measure
+sleep 10
+
+echo "run$((a+1)) - Quota on; gsync on..."
+ssh -l root $MGMT_NODE "gluster volume reset $VOLNAME force"
+sleep 5
+ssh -l root $MGMT_NODE "gluster volume quota $VOLNAME enable"
+sleep 5
+ssh -l root $MGMT_NODE "gluster volume set $VOLNAME geo-replication.indexing on"
+sleep 5
+echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - $GF_CONFIG - (quota on, gsync on)" >> $RUNLOG
+./start_perf_measure
+sleep 10
+
+echo "run$((a+2)) - Quota on; gsync off..."
+ssh -l root $MGMT_NODE "gluster volume reset $VOLNAME force"
+sleep 5
+ssh -l root $MGMT_NODE "gluster volume quota $VOLNAME enable"
+sleep 5
+echo "run`cat .runfile` - $MOUNT_TYPE - $runlabel - $GF_CONFIG - (quota on, gsync off)" >> $RUNLOG
+./start_perf_measure
+sleep 10
+
+# Restore
+ssh -l root $MGMT_NODE "gluster volume reset $VOLNAME force"
+sleep 5
+

@@ -1,0 +1,85 @@
+Brief desciption of individual scripts:
+----------------------------------------
+acl - Enable/Disable acl on the backend filesystem.
+analyze_perf_data - Create plots using the data generated during perf runs.
+batchrun - Used for running multiple tarballs one after the other.
+buildit - Build scripts used by deploy_gluster for parallel builds.
+calc_all - Print results of all 3 runs performed in perf.sh
+calc_avg - Print average of 3 runs performed in perf.sh
+calc_best - Print best of the 3 runs performed in perf.sh
+calc_worst - Print worst of the 3 runs performed in perf.sh
+check_install - Print checksums of built and installed binaries
+check_install.new - Check if installation succeeded on all machines.
+create_gluster_vol - Create a gluster volume using parameters in gf_perf_conig
+deploy_gluster - Install gluster from source on multiple machines
+gf_perf_config - Example config file. Most scripts depend on this config file.
+perf.sh - Perf test wrapper that runs perf-test.sh thrice.
+perf-test.sh - Perf test
+quota_gsync_run - Used to run different Quota/Gsync combinations
+run - Used to run any command on multiple systems
+setbatch - Set the tarballs for batch run
+setrun - Set the tarball for a single run
+start_perf_measure - Launch statistics collection script on all machines
+involved in a perf run, start the perf run and save statistics post run.
+stat_collect - Helper script to collect system statistics during perf runs.
+
+diff_perfrun
+------------
+<File Begin>
+DATA FOR BASELINE - Output of calc_avg for the baseline
+followed by
+DATA FOR THE NEW RUN - Output of calc_avg for the new run
+<FILE END>
+
+It also assumes that there are 4 columns - one each for Quota/Gsync combination.
+You can then put in a criteria for percentage deviation from the baseline which should send out an alert.
+
+
+Setting up the environment:
+------------------------------------
+* Initialize the required variables by modifying the example gf_perf_config
+present in the git repo.
+
+Building and deploying GlusterFS
+------------------------------------
+* Populate the BRICKS variable in gf_perf_config
+* If you want to deploy a tarball, update the tarball in gf_perf_config
+and then run "deploy_gluster". This will copy the tarball to all the bricks and
+will build it there. This uses a script called buildit which is part of the
+repo.
+
+Running the tests
+------------------------------------
+* Use start_perf_measure to run the tests. The test run details can be changed
+in gf_perf_config before the run. You can specify whether the configuration is
+a distribute, replicate or distributed-replicate (distrep).
+* This will generate statistics in the log_repo for the current run under the
+director - "$log_repo/<current run>"
+* The run "id" is maintained by a ".runfile" which gets generated on the first
+run and is later updated as required during subsequent runs.
+* NOTE: You can use "batchrun" to start tests for all combinations. Downloading
+the tarball to the cwd is the responsibility of the user.
+
+Analyzing the output
+------------------------------------
+* Use analyze_perf_measure to generate plots of resource utilization for all the
+bricks and the client.
+
+Running Quota and Gsync combinations:
+------------------------------------
+* After an initial run (as described above) is complete, you can run different
+combinations of Quota/Gsync by running quota_gsync_run.
+* NOTE: Before running this script, it is important to comment out the line -
+./create_gluster_vol in the script start_perf_measure.
+Otherwise, a new volume will be created for every combination, which will wipe
+out the Quota/Gsync settings. Look at the usage in batchrun.
+TODO: Need to use the gluster command line to enable/disable quota/gsync instead
+of directly modifying the volume file.
+
+Setting up automated-email setup:
+--------------------------------
+* Setup automated emails to send results as soon as the runs are done. The whole
+email setup is done using Lakshmipathi's inotify program available at
+http://github.com/gluster/qa/blob/master/c_pgms/inotify.c & when a file is scpd
+to the particular destination, inotify sends across the mail from a shell.gluster.com
+account.

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo ""
+echo "Q - Quota ON, q - Quota OFF, G - Gsync ON, g - Gsync  OFF"
+echo ""
+echo "======================================================================"
+echo "OPERATIONS                      q-g       q-G       Q-G       Q-g"
+echo "======================================================================"
+for i in `cat /tmp/ops`
+do
+    printf "%-25s" $i
+    for j in 2 3 4 5
+    do
+        printf "%10.1f" `echo \`grep -w ^$i /tmp/$1 | awk -v col=$j '{print $col}'\` | awk '{print ($2 - $1)*100/$1}' | tr '\n' '\t'`
+    done
+    echo ""
+done
