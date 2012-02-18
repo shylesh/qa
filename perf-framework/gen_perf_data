@@ -1,0 +1,191 @@
+#!/bin/bash -u
+
+MPSTAT_LOG=mpstat_log1908
+VMSTAT_LOG=vmstat_log1908
+SYSINFO=sysinfo1908
+PERFLOG=perf-fuse-ami.log
+
+source gnuplotrc
+
+function gen_cpu_data()
+{
+	time=0
+	sum=0
+	
+	if [ -f times ]
+	then
+	        rm times
+	fi
+	
+	for op in `cat ops`
+	do
+	        time=0;
+	        for i in `grep -w ^$op $PERFLOG | awk '{print $2}'| cut -f1 -d'.'`
+	        do
+	                time=$((time+$i))
+	        done;
+	        time=$((time/3)) # Average over three runs
+	        sum=$((sum + $time))
+	        echo $sum >> times
+	done
+	sed -i 's/$/  200/g' times
+	
+	num_procs=`grep -w ^processor $SYSINFO | wc -l`
+	echo `grep idle $MPSTAT_LOG | head -1 | awk '{print $NF}'` | grep -o idle
+	col_tweak=$?
+	for i in "all" 0 `seq $((num_procs-1))`
+	do
+	        egrep -v 'Linux|^$|idle' $MPSTAT_LOG | awk -v v1=$col_tweak '{print $3 " " $(NF-v1)}' | grep -w ^$i | cut -f 2 -d' '| sed 's/^/100-/g' | bc -l > cpu-$i;
+	        cat -n cpu-$i > cpu-$i.new
+	done
+}
+
+function plot_cpu_usage()
+{
+	xrange=$((`tail -1 times | awk '{print $1}'`+50))
+	MPSTAT_INTERVAL=5
+        plot_info=pinfo.$$
+        num_procs=`grep -w ^processor $SYSINFO | wc -l`
+        ltype=1
+	
+        for i in "all" 0 `seq $((num_procs-1))`
+        do
+                echo -ne "\"cpu-$i.new\" using (\$1*$MPSTAT_INTERVAL):2 title 'cpu-$i' with lines lt $ltype lw 2,\\c" >> $plot_info
+                ltype=$((ltype+1))
+        done
+        echo "\"times\" using 1:2 title '' with impulse lt 2 lw 1 lc rgb \"#FF0000\"" >> $plot_info
+
+	gnuplot <<EOF
+	set autoscale 
+	set grid
+	set title "CPU utilization : All CPUs"
+	set xlabel "Time"
+	set ylabel "% CPU utilization"
+	set xr [0:$xrange]
+	set yr [0:100]
+	set terminal png nocrop size 1024,768
+	set output "$CPU_PLOT_OUTPUT"
+        plot `cat $plot_info`
+EOF
+        rm $plot_info
+}
+
+function gen_vm_data()
+{
+	egrep -v 'memory|free' $VMSTAT_LOG  | awk '{print $4}' > vm_datafile
+	totalmem=`grep -w ^MemTotal $SYSINFO | awk '{print $2}'`
+	cat vm_datafile | sed "s/^/$totalmem-/g" | bc > memfile
+}
+
+function plot_vm_usage()
+{
+	vmstat_interval=5
+	total_mem=`grep -w ^MemTotal $SYSINFO | awk '{print $2}'`
+	xrange=$((`tail -1 times | awk '{print $1}'`+50))
+	
+	gnuplot <<EOF
+	set autoscale 
+	set grid
+	set title "Memory utilization"
+	set xlabel "Time"
+	set ylabel "Memory utilization in bytes"
+	set xr [0:$xrange]
+	set yr [0:$total_mem]
+	set terminal png nocrop size 1024,768
+	set output "$VM_PLOT_OUTPUT"
+	plot  "vm_datafile" using 1 title 'free-memory' with lines lt 1 lw 2, \
+	      "memfile" using 1 title 'memory-usage' with lines lt 2 lw 2,\
+	      "times" using 1:(\$2*$total_mem/100) title '' with impulse lt 2 lw 1 lc rgb "#FF0000"
+EOF
+}
+
+function gen_cmp_data()
+{
+	perflog_baseline=$1
+	perflog_current=$2
+	
+	time=0
+	for op in `cat ops`
+	do
+	        time=0;
+	        for i in `grep -w ^$op $perflog_baseline | awk '{print $2}'| cut -f1 -d'.'`
+	        do
+	                time=$((time+$i))
+	        done;
+	        time=$((time/3)) # Average over three runs
+	        echo $time >> btimes.$$
+	done
+	
+	for op in `cat ops`
+	do
+	        time=0;
+	        for i in `grep -w ^$op $perflog_current | awk '{print $2}'| cut -f1 -d'.'`
+	        do
+	                time=$((time+$i))
+	        done;
+	        time=$((time/3)) # Average over three runs
+	        echo $time >> ctimes.$$
+	done
+	
+	paste -d " " ops btimes.$$ ctimes.$$ > $CMP_DATAFILE
+	rm btimes.$$ ctimes.$$
+}
+
+function plot_comparison()
+{
+	a=`cat $CMP_DATAFILE | awk '{print $2"\n"$3}' | sort -n | tail -1`
+	yrange=`echo $a + $a/5 | bc`
+	b=`wc -l $CMP_DATAFILE | awk '{print $1}'`
+	xrange=`echo $b - 0.5 | bc` 
+	
+	gnuplot <<EOF
+	reset
+	set key at graph 0.15, 0.85 horizontal samplen 0.1
+	set style data histogram
+	set style histogram cluster gap 1
+	set style fill solid border -1
+	set boxwidth 0.8
+	set xtic rotate by 90 scale 0
+	unset ytics
+	set y2tics rotate by 90
+	set terminal png nocrop size 1024,768
+	set xlabel ' '
+	set size 0.6, 1
+	set yrange [0:$yrange]; set xrange [-0.5:$xrange]
+	set y2label '$XLABEL' offset -2
+	set label 1 '$YLABEL' at graph 0.5, -0.4 centre rotate by 180
+	set label 2 '$LEGEND_A' at graph 0.05, 0.85 left rotate by 90
+	set label 3 '$LEGEND_B' at graph 0.12, 0.85 left rotate by 90
+	set label 4 '$PLOT_TITLE' at graph -0.01, 0.5 center rotate by 90
+	set output "tmp.$$.png"
+	p '$CMP_DATAFILE' u 2 title ' ', '' u 3 title ' ', '' u 0:(0):xticlabel(1) w l title ''
+EOF
+        convert tmp.$$.png -rotate 90 $CMP_PLOT_OUTPUT
+        rm tmp.$$.png
+}
+
+# Generate CPU data
+gen_cpu_data
+
+# plot CPU data
+plot_cpu_usage
+
+# Generate VM data
+gen_vm_data
+
+# plot VM data
+plot_vm_usage
+
+# Generate comparison data - baseline vs current run
+gen_cmp_data perf-fuse-ami.log perf-fuse-aws.log
+
+# plot perf comparison - baseline vs current run
+plot_comparison
+
+# cleanup tmp files
+rm vm_datafile memfile
+rm cpu-* times
+
+display cpu.png &
+display vm.png &
+display cmp.png &

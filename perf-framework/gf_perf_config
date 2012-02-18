@@ -1,0 +1,34 @@
+# Common config variables
+RELEASE_TARBALL=glusterfs-3git.tar.gz
+BRICK_IP_ADDRS="10.1.10.30 10.1.10.31 10.1.10.35 10.1.10.36"
+GF_CONFIG="stripe"
+VOLNAME="testvol"
+MGMT_NODE="10.1.10.30"
+
+# Server specific config variables
+SERVER_BUILD_DIR=/data/rahul/gluster_builds
+SERVER_LOG_DIR=/data/rahul/PERF/server_logs
+SERVER_SCRIPTS_DIR=/data/rahul/PERF/scripts
+SERVER_EXPORT_DIR=/data/rahul/datastore
+
+# Client specific config variables
+MOUNT_TYPE="glusterfs"
+#MOUNT_TYPE="nfs"
+MOUNT_POINT=/mnt/perfmount
+LOCAL_LOG_REPO=/root/rahul/test_deploy/log_repo
+CLIENT_BUILD_DIR=/root/rahul/test_deploy/gluster_builds
+CLIENT_IP_ADDR=10.1.10.29
+RUNLOG=$LOCAL_LOG_REPO/runlog
+
+# Special runs
+ENABLE_ACL=yes
+ENABLE_MEM_ACCT=no
+
+# For passwordless ssh setup
+ROOT_PW1=abc123
+ROOT_PW2=abc321
+# SSH_HOSTS is a space separated list of hosts
+SSH_HOSTS="0"
+
+# Setup automated emails
+EMAIL="rahul@shell.gluster.com:/home/rahul/perf_logs"

@@ -1,0 +1,71 @@
+#!/bin/bash
+
+FILE_REPO="/mnt/perfmount/file_repo"
+TEST=0
+DD_BS=512
+RAND_SCALE=20
+
+function usage()
+{
+        echo "usage: $1 <thread_count> <file_count>"
+        exit 1
+}
+
+function create_files()
+{
+        tid=$1
+        count=$2
+        start=$((tid*count))
+
+        if [ $TEST -eq "1" ]; then
+                for ((i=0; i<${count}; i++)); do
+                        outfile=$FILE_REPO/tid${tid}_file$((start+i))
+                        echo "dd if=/dev/urandom of=$outfile bs=1b count=$((RANDOM*20))"
+                done
+        else
+                for ((i=0; i<${count}; i++)); do
+                        filesize=$((RANDOM*RAND_SCALE))
+                        dd_count=$((filesize/DD_BS))
+                        outfile=$FILE_REPO/tid${tid}_file$((start+i))
+                        dd if=/dev/zero of=$outfile bs=1b count=$dd_count > /dev/null 2>&1
+                        echo "$tid $i"
+                done
+        fi
+}
+
+function Not_A_Number()
+{
+        echo $1$2 | grep ^[0-9]*$ > /dev/null
+        return $?
+}
+
+function main()
+{
+        if [ $# -ne 2 ]; then
+                usage $0
+        fi
+
+        if ! Not_A_Number $1 $2; then
+                echo "Invalid input. Enter only numbers."
+                usage
+        fi
+
+        if [ $2 -lt $1 ]; then
+                echo "Number of files cannot be less than number of threads"
+                usage $0
+        fi
+
+        mkdir -p $FILE_REPO
+
+        nthr=$1
+        fc=$2
+        files_per_thr=$((fc/nthr))
+        
+        for i in `seq 0 $((nthr-1))`; do
+                create_files $i $files_per_thr &
+        done    
+
+        wait
+}
+
+main $@

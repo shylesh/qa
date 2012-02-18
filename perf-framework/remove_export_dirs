@@ -1,0 +1,10 @@
+#!/bin/bash -ue
+
+SERVER_EXPORT_DIR=$1
+
+if [ "$SERVER_EXPORT_DIR" != "" -a "$SERVER_EXPORT_DIR" != "/" ]
+then
+	echo "$SERVER_EXPORT_DIR"
+else
+	echo "Empty export dir"
+fi

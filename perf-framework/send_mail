@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CONFIG_FILE=gf_perf_config
+source $CONFIG_FILE
+
+./calc_avg "$@" > /tmp/run_all
+
+scp /tmp/run_all $EMAIL/run_all;
